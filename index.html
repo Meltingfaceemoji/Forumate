@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Forumate</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #4267B2;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      position: relative;
+    }
+    #adminBtn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 35px;
+      height: 35px;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 50%;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    main {
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    input, textarea {
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4267B2;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    button:hover { background-color: #365899; }
+    .post {
+      background-color: white;
+      border-radius: 8px;
+      padding: 12px 15px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .post:nth-child(even) { background-color: #f5f6f7; }
+    .name { font-weight: bold; color: #333; }
+    .message { margin: 5px 0; color: #555; }
+    .timestamp { font-size: 0.8em; color: #888; }
+  </style>
+</head>
+<body>
+
+<header>Forumate</header>
+<main>
+  <input type="text" id="name" placeholder="Your name">
+  <textarea id="message" placeholder="Your message"></textarea>
+  <button onclick="postMessage()">Post</button>
+
+  <div id="posts"></div>
+</main>
+
+<!-- Admin reset button -->
+<button id="adminBtn" onclick="adminPrompt()">A</button>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyA1pylg4PQS_hXhKiLvYcdgh5jbLYhME40",
+    authDomain: "html-test-forum.firebaseapp.com",
+    databaseURL: "https://html-test-forum-default-rtdb.firebaseio.com",
+    projectId: "html-test-forum",
+    storageBucket: "html-test-forum.firebasestorage.app",
+    messagingSenderId: "781492084495",
+    appId: "1:781492084495:web:309c83e29024ba321ba87a",
+    measurementId: "G-H877ZK81ZM"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const postsDiv = document.getElementById('posts');
+
+  function postMessage() {
+    const name = document.getElementById('name').value.trim();
+    const message = document.getElementById('message').value.trim();
+    if(!name || !message) return alert('Name and message required');
+
+    const timestamp = new Date().toLocaleString();
+    db.ref('posts').push({name, message, timestamp});
+
+    document.getElementById('name').value = '';
+    document.getElementById('message').value = '';
+  }
+
+  db.ref('posts').on('value', snapshot => {
+    postsDiv.innerHTML = '';
+    snapshot.forEach(child => {
+      const data = child.val();
+      const div = document.createElement('div');
+      div.className = 'post';
+      div.innerHTML = `<div class="name">${data.name}</div>
+                       <div class="message">${data.message}</div>
+                       <div class="timestamp">${data.timestamp}</div>`;
+      postsDiv.prepend(div);
+    });
+  });
+
+  function adminPrompt() {
+    const pwd = prompt("Enter admin password:");
+    if(pwd === "Admin") {
+      if(confirm("Are you sure you want to reset all posts?")) {
+        db.ref('posts').remove().then(() => {
+          alert("Forum reset!");
+          location.reload();
+        });
+      }
+    } else if(pwd !== null) {
+      alert("Wrong password.");
+    }
+  }
+</script>
+
+</body>
+</html>
