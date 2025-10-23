@@ -1,123 +1,78 @@
-// ------------------ Firebase ------------------
-const firebaseConfig = {
-  apiKey: "AIzaSyA1pylg4PQS_hXhKiLvYcdgh5jbLYhME40",
-  authDomain: "html-test-forum.firebaseapp.com",
-  databaseURL: "https://html-test-forum-default-rtdb.firebaseio.com",
-  projectId: "html-test-forum",
-  storageBucket: "html-test-forum.appspot.com",
-  messagingSenderId: "781492084495",
-  appId: "1:781492084495:web:309c83e29024ba321ba87a"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+/* Reset */
+* { box-sizing:border-box; margin:0; padding:0; }
+html, body { width:100%; height:100%; font-family:"Segoe UI", sans-serif; color:white; overflow:hidden; }
 
-// ------------------ Elements ------------------
-const sidebar = document.getElementById('sidebar');
-const menuButton = document.getElementById('menuButton');
-const closeSidebar = document.getElementById('closeSidebar');
-const adminPopup = document.getElementById('adminPopup');
-const adminButton = document.getElementById('adminButton');
-const closeAdminPopup = document.getElementById('closeAdminPopup');
-const loginButton = document.getElementById('loginButton');
-const infoButton = document.getElementById('infoButton');
-const closeInfo = document.getElementById('closeInfo');
-const infoPopup = document.getElementById('infoPopup');
-const sendButton = document.getElementById('sendButton');
-const nameInput = document.getElementById('nameInput');
-const messageInput = document.getElementById('messageInput');
-const messages = document.getElementById('messages');
-const lastNameKey = "forumateLastName";
-
-// Admin constants
-const ADMIN_USERNAME = "melting";
-const ADMIN_PASSWORD = "melting";
-let isAdmin = false;
-
-// ------------------ LocalStorage for last used name ------------------
-if(localStorage.getItem(lastNameKey)) nameInput.value = localStorage.getItem(lastNameKey);
-
-// ------------------ Sidebar ------------------
-menuButton.addEventListener('click', () => {
-  sidebar.classList.add('visible'); 
-  closeSidebar.style.display = 'block';
-});
-closeSidebar.addEventListener('click', () => {
-  sidebar.classList.remove('visible'); 
-  closeSidebar.style.display = 'none';
-});
-
-// ------------------ Admin Login ------------------
-adminButton.addEventListener('click', () => adminPopup.classList.remove('hidden'));
-closeAdminPopup.addEventListener('click', () => adminPopup.classList.add('hidden'));
-loginButton.addEventListener('click', () => {
-  const username = document.getElementById('adminUser').value.trim().toLowerCase();
-  const password = document.getElementById('adminPass').value.trim();
-  if(username === ADMIN_USERNAME && password === ADMIN_PASSWORD){
-    alert("Admin logged in!"); 
-    adminPopup.classList.add('hidden'); 
-    isAdmin = true;
-  } else alert("Wrong credentials!");
-});
-
-// ------------------ Info Popup ------------------
-infoButton.addEventListener('click', ()=> infoPopup.classList.remove('hidden'));
-closeInfo.addEventListener('click', ()=> infoPopup.classList.add('hidden'));
-
-// Generate a random user # (for simplicity)
-const userHash = Math.floor(Math.random()*9999+1);
-document.getElementById('userHash').textContent = `User #: ${userHash}`;
-
-// ------------------ Send Message ------------------
-sendButton.addEventListener('click', sendMessage);
-messageInput.addEventListener('keypress', e => { if(e.key==='Enter') sendMessage(); });
-
-function sendMessage(){
-  const name = nameInput.value.trim();
-  const msg = messageInput.value.trim();
-  if(!name || !msg) return;
-
-  localStorage.setItem(lastNameKey, name);
-
-  const timestamp = Date.now();
-  const ipHash = getIPHash();
-  const counter = getUserCounter(name, ipHash);
-
-  const displayName = `${name} #${counter}`;
-  const msgData = { name: displayName, msg, owner: isAdmin?'OWNER':false, timestamp, ipHash };
-  db.ref('messages/'+timestamp).set(msgData);
-
-  messageInput.value = '';
+/* Wallpaper */
+.wallpaper{
+  position:fixed; inset:0; width:100%; height:100%;
+  background:url("Wallpaper.png") center/cover no-repeat; z-index:-1;
+  filter:brightness(0.85);
 }
 
-// ------------------ Load Messages ------------------
-db.ref('messages').on('value', snapshot => {
-  messages.innerHTML = '';
-  const data = snapshot.val();
-  if(!data) return;
-  Object.values(data).sort((a,b)=>a.timestamp-b.timestamp).forEach(m=>{
-    const div=document.createElement('div');
-    div.className='message';
-    if(m.owner) div.classList.add('owner');
-    div.innerHTML=`<b>${m.owner?'OWNER':m.name}:</b> ${m.msg}`;
-    messages.appendChild(div);
-  });
-  messages.scrollTop = messages.scrollHeight;
-});
-
-// ------------------ Helper functions ------------------
-const ipCounter = {}; // Keeps track of counters per IPHash
-
-function getIPHash(){
-  // For simplicity, use localStorage as a pseudo IP
-  if(!localStorage.getItem("ipHash")) localStorage.setItem("ipHash", Math.floor(Math.random()*100000));
-  return localStorage.getItem("ipHash");
+/* Top Bar */
+.topbar{
+  position:fixed; top:0; left:0; width:100%; height:50px;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:0 10px; background:rgba(20,20,20,0.6); backdrop-filter:blur(8px);
+  z-index:100;
 }
-
-function getUserCounter(name, ipHash){
-  if(!ipCounter[ipHash]) ipCounter[ipHash] = {};
-  if(!ipCounter[ipHash][name]) ipCounter[ipHash][name] = Object.keys(ipCounter[ipHash]).length+1;
-  return ipCounter[ipHash][name];
+.topbar .left, .topbar .center, .topbar .right{
+  display:flex; align-items:center; gap:10px;
 }
+.title{ font-size:1.2em; font-weight:600; }
+button.hamburger, button.info-btn, button.admin-btn{
+  background: rgba(255,255,255,0.15); border:none; color:white;
+  padding:6px 10px; border-radius:50%; cursor:pointer; font-size:1.1em;
+  transition:background 0.2s;
+}
+button.hamburger:hover, button.info-btn:hover, button.admin-btn:hover{background: rgba(255,255,255,0.3);}
+#version{ font-size:0.9em; opacity:0.9; } 
+#updateStatus{ font-size:0.75em; opacity:0.7; }
 
-// ------------------ Version + Update Checker ------------------
-document.getElementById('updateStatus').textContent = "(Up to date)";
+/* Sidebar */
+.sidebar{
+  position:fixed; top:50px; left:0; width:260px; height:calc(100%-50px);
+  background:rgba(30,30,30,0.8); backdrop-filter:blur(10px);
+  transform:translateX(-100%); transition:transform 0.3s ease; z-index:90;
+}
+.sidebar.visible{transform:translateX(0);}
+.sidebar .close{
+  position:absolute; top:10px; right:10px; font-size:1.4em; background:none; border:none; color:white; cursor:pointer;
+  display:none; /* Only show when sidebar open via JS */
+}
+#sidebarContent{
+  margin-top:50px; display:flex; flex-direction:column; gap:10px; padding:10px 20px;
+}
+#sidebarContent button{
+  background: rgba(255,255,255,0.15); border:none; color:white; padding:10px; border-radius:10px; text-align:left; cursor:pointer;
+  transition:background 0.2s;
+}
+#sidebarContent button:hover{background: rgba(255,255,255,0.3);}
+
+/* Main Content */
+#mainContent{ padding-top:50px; height:calc(100%-50px); display:flex; flex-direction:column; justify-content:flex-end; }
+.message-container{ flex:1; overflow-y:auto; padding:15px; display:flex; flex-direction:column; gap:10px; }
+.message{ background: rgba(255,255,255,0.1); border-radius:12px; padding:10px; backdrop-filter:blur(5px); }
+.owner{ color:#ff5555; font-weight:bold; }
+
+/* Input */
+.input-container{ display:flex; gap:8px; padding:10px; background:rgba(20,20,20,0.6); backdrop-filter:blur(8px); }
+.input-container input{ flex:1; border:none; border-radius:8px; padding:8px; background: rgba(255,255,255,0.1); color:white; }
+.input-container button{ border:none; border-radius:8px; padding:8px 12px; background: rgba(255,255,255,0.2); color:white; cursor:pointer; }
+.input-container button:hover{ background: rgba(255,255,255,0.3); }
+
+/* Popups */
+.popup{
+  position:fixed; inset:0; background:rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center; z-index:200;
+}
+.popup.hidden{ display:none; }
+.popup-inner{ background:rgba(25,25,25,0.9); padding:20px; border-radius:16px; width:300px; text-align:center; }
+
+/* Mobile */
+@media(max-width:600px){
+  .topbar{ height:46px; padding:0 8px; }
+  .sidebar{ width:100%; height:60%; top:46px; transform:translateY(-100%);}
+  .sidebar.visible{transform:translateY(0);}
+  .input-container{ flex-direction:column; }
+  .input-container input, .input-container button{ width:100%; }
+}
