@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forumate v6.2</title>
+<title>Forumate v6.3</title>
 <style>
 :root{--bg:rgba(0,0,0,0.4);--glass:rgba(255,255,255,0.2);--post-bg:rgba(255,255,255,0.12);}
 body{margin:0;font-family:'Segoe UI',Tahoma,sans-serif;background:url('wallpaper.png') no-repeat center center fixed;background-size:cover;color:#fff;transition:background 0.3s,color 0.3s;}
@@ -12,12 +12,12 @@ body.potato *{transition:none!important;backdrop-filter:none!important;}
 #version{position:fixed;bottom:10px;right:15px;color:rgba(255,255,255,0.7);font-size:14px;z-index:1000;}
 #updateIndicator{font-size:12px;color:lime;cursor:pointer;margin-left:5px;display:none;}
 #adminBtn{display:inline-block;position:fixed;top:15px;right:15px;width:32px;height:32px;border-radius:50%;background:rgba(244,67,54,0.85);color:white;font-weight:bold;font-size:16px;border:none;cursor:pointer;z-index:3100;}
-#sidebar{position:fixed;top:-100%;left:0;width:100%;height:auto;background: rgba(50,50,50,0.95);backdrop-filter: blur(15px);padding:60px 20px 20px 20px;box-shadow:0 2px 15px rgba(0,0,0,0.4);transition:top 0.4s;z-index:1500;}
+#sidebar{position:fixed;top:-100%;left:0;width:100%;background: rgba(50,50,50,0.95);backdrop-filter: blur(15px);padding:60px 20px 20px 20px;box-shadow:0 2px 15px rgba(0,0,0,0.4);transition:top 0.4s;z-index:1500;}
 #sidebar.show{top:0;}
-#sidebar .sidebar-buttons{opacity:0;transition:opacity 0.3s;}
+#sidebar .sidebar-buttons{opacity:0;transition:opacity 0.3s;display:flex;flex-direction:column;}
 #sidebar.show .sidebar-buttons{opacity:1;}
 #sidebar .sidebar-buttons button{width:100%; margin:10px 0; padding:12px; border-radius:12px; border:none;background: rgba(66,103,178,0.3); color:#fff; font-weight:bold; cursor:pointer; transition:0.3s;}
-#sidebar .sidebar-buttons button:hover{background: rgba(66,103,178,0.6);transform: translateX(0); }
+#sidebar .sidebar-buttons button:hover{background: rgba(66,103,178,0.6);}
 #sidebar .closeBtn{position:absolute;top:10px;right:10px;background:none;color:white;font-size:24px;cursor:pointer;border:none;display:none;z-index:2500;}
 #sidebar.show .closeBtn{display:block;}
 #hamburger{position:fixed;top:15px;left:15px;width:28px;height:28px;border-radius:50%;background:rgba(66,103,178,0.8);color:white;font-weight:bold;font-size:16px;text-align:center;line-height:28px;cursor:pointer;z-index:3000;user-select:none;}
@@ -55,7 +55,7 @@ input::placeholder, textarea::placeholder{color: rgba(255,255,255,0.7);}
 <body>
 
 <button id="adminBtn" onclick="showAdminLogin()">A</button>
-<div id="version">v6.2 (Last updated: 2025-10-23) <span id="updateIndicator">⬆</span></div>
+<div id="version">v6.3 (Last updated: 2025-10-23) <span id="updateIndicator">⬆</span></div>
 <div id="hamburger" onclick="toggleSidebar()">☰</div>
 
 <div id="sidebar">
@@ -92,6 +92,7 @@ input::placeholder, textarea::placeholder{color: rgba(255,255,255,0.7);}
   <button id="postBtn" onclick="postMessage()">Post</button>
   <button id="reportBugBtn" style="display:none;" onclick="submitBug()">Submit Bug</button>
   <div id="posts"></div>
+  <div id="bugs" style="display:none;"></div>
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -102,14 +103,11 @@ const firebaseConfig = {apiKey:"AIzaSyA1pylg4PQS_hXhKiLvYcdgh5jbLYhME40",authDom
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 const postsDiv=document.getElementById('posts');
+const bugsDiv=document.getElementById('bugs');
 let isAdmin=false;
 
-// Sidebar
-function toggleSidebar(){
-  const sb=document.getElementById('sidebar');
-  if(sb.style.top=='0px') sb.style.top='-100%';
-  else sb.style.top='0px';
-}
+// Sidebar toggle
+function toggleSidebar(){const sb=document.getElementById('sidebar');if(sb.style.top=='0px') sb.style.top='-100%';else sb.style.top='0px';}
 
 // Dark & Potato Mode
 function toggleDarkMode(){document.body.classList.toggle('dark');localStorage.setItem('darkMode',document.body.classList.contains('dark'));}
@@ -124,7 +122,7 @@ function loginAdmin(){
   const user=document.getElementById('loginName').value.trim();
   const pass=document.getElementById('loginPass').value.trim();
   localStorage.setItem('lastAdminUser',user);
-  if(user==='melting'&&pass==='melting'){
+  if(user.toLowerCase()==='melting'&&pass==='melting'){
     isAdmin=true;
     document.getElementById('loginPopup').style.display='none';
     document.getElementById('seeBugsBtn').style.display='block';
@@ -135,40 +133,29 @@ function loginAdmin(){
 }
 function logoutAdmin(){isAdmin=false;document.getElementById('seeBugsBtn').style.display='none';document.getElementById('adminMenu').style.display='none';alert('Admin logged out');}
 
-// User IP and persistent number
+// Post submission with persistent #numbers
 async function getUserIP(){try{let res=await fetch('https://api.ipify.org?format=json');let data=await res.json();return data.ip;}catch{return 'unknown';}}
 async function getUserNumber(ip){const snapshot=await db.ref('ids/'+ip).once('value');let id=snapshot.val();if(!id){id=Math.floor(Math.random()*9000)+1000;db.ref('ids/'+ip).set(id);}return id;}
-
-// Posts
 async function postMessage(){
   const name=document.getElementById('name').value.trim();
   const message=document.getElementById('message').value.trim();
   const image=document.getElementById('image').value.trim();
   if(!name||!message) return alert('Name and message required');
-
-  const ip = await getUserIP();
-  const number = await getUserNumber(ip);
-  const displayName = name + ' <span class="tag">#'+number+'</span>';
-
-  const post={name:displayName,message};
-  if(image) post.image=image;
-  if(isAdmin){post.admin=true;post.name='OWNER';}
+  const ip=await getUserIP();
+  const number=await getUserNumber(ip);
+  const displayName=isAdmin?'OWNER':name+' <span class="tag">#'+number+'</span>';
+  const post={name:displayName,message,image:image||'',ip:ip};
   db.ref('posts').push(post);
-
   document.getElementById('name').value='';document.getElementById('message').value='';document.getElementById('image').value='';
 }
-
 function loadPosts(){
-  db.ref('posts').on('value', snapshot => {
-    postsDiv.innerHTML='';
-    let countOnline=0;
-    snapshot.forEach(child => {
+  db.ref('posts').on('value',snapshot=>{
+    postsDiv.innerHTML='';let countOnline=0;
+    snapshot.forEach(child=>{
       countOnline++;
       const post=child.val();
-      const postEl=document.createElement('div');
-      postEl.className='post';
-      if(post.admin) postEl.classList.add('pinned');
-      postEl.innerHTML=`<span class="name ${post.admin?'owner':''}">${post.name}</span>: ${post.message}`;
+      const postEl=document.createElement('div');postEl.className='post';
+      postEl.innerHTML=`<span class="name ${isAdmin?'owner':''}">${post.name}</span>: ${post.message}`;
       if(post.image) postEl.innerHTML+=`<br><img src="${post.image}" />`;
       if(isAdmin) postEl.innerHTML+=`<span class="postMenuBtn" onclick="deletePost('${child.key}')">⋮</span>`;
       postsDiv.appendChild(postEl);
@@ -176,11 +163,17 @@ function loadPosts(){
     document.getElementById('onlineCount').innerText='Online: '+countOnline;
   });
 }
-
 function deletePost(key){if(isAdmin) db.ref('posts/'+key).remove();}
-function resetForum(){if(isAdmin && confirm('Clear all posts?')) db.ref('posts').remove();}
-function pinPost(){alert('Select a post and mark it pinned in next version');}
+function resetForum(){if(isAdmin&&confirm('Clear all posts?')) db.ref('posts').remove();}
+function pinPost(){alert('Pinned post feature placeholder');}
 
+// Bug reporting
+function showBugForm(){document.getElementById('reportBugBtn').style.display='block';document.getElementById('posts').style.display='none';}
+function submitBug(){const bug=prompt('Describe the bug:');if(bug){db.ref('bugs').push({bug:bug,date:new Date().toLocaleString()});alert('Bug submitted');document.getElementById('reportBugBtn').style.display='none';document.getElementById('posts').style.display='block';}}
+function viewBugs(){if(isAdmin){document.getElementById('posts').style.display='none';document.getElementById('bugs').style.display='block';bugsDiv.innerHTML='';db.ref('bugs').once('value',snap=>{snap.forEach(c=>{const b=c.val();const div=document.createElement('div');div.className='post';div.innerHTML=`${b.date}: ${b.bug}`;bugsDiv.appendChild(div);});});document.getElementById('backBtn').style.display='block';}}
+function backToPosts(){document.getElementById('posts').style.display='block';document.getElementById('bugs').style.display='none';document.getElementById('backBtn').style.display='none';}
+
+// Initialize
 loadPosts();
 </script>
 </body>
