@@ -1,74 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forumate v7.4 – Codename Simplicity</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script src="script.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forumate 7.4 – Simplicity</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- Wallpaper -->
   <div class="wallpaper"></div>
 
   <!-- Top Bar -->
-  <header class="top-bar">
-    <div id="hamburger" class="hamburger" onclick="toggleSidebar()">☰</div>
-    <div class="top-right-buttons">
-      <button id="adminBtn" onclick="showAdminLogin()">A</button>
-      <button id="infoBtn" onclick="showInfo()">i</button>
+  <header class="topbar">
+    <div class="left">
+      <button id="menuButton" class="hamburger">☰</button>
+      <span class="title">Forumate</span>
     </div>
-    <div id="version" class="version"></div>
-    <div id="updateIndicator" class="update-indicator">Checking...</div>
-    <div id="onlineCount" class="online">Online: 0</div>
+    <div class="center">
+      <span id="version">v7.4</span>
+      <span id="updateStatus">(Up to date)</span>
+    </div>
+    <div class="right">
+      <button id="infoButton" class="info-btn">i</button>
+      <button id="adminButton" class="admin-btn">A</button>
+    </div>
   </header>
 
   <!-- Sidebar -->
-  <nav id="sidebar" class="sidebar">
-    <div id="sidebarButtons">
-      <button onclick="logoutAdmin()" id="adminMenu">Logout Admin</button>
-      <button onclick="viewBugs()" id="seeBugsBtn">See Bugs</button>
-      <button onclick="showBugForm()" id="reportBugBtn">Report Bug</button>
+  <aside id="sidebar" class="sidebar hidden">
+    <button id="closeSidebar" class="close">×</button>
+    <div id="sidebarContent">
+      <button id="reportBug">Report Bug</button>
+      <button id="settings">Settings</button>
+      <button id="logoutButton">Logout</button>
     </div>
-  </nav>
+  </aside>
 
   <!-- Main Content -->
-  <main class="main-content">
-    <div id="posts" class="posts"></div>
+  <main id="mainContent">
+    <div class="message-container" id="messages"></div>
+    <div class="input-container">
+      <input type="text" id="nameInput" placeholder="Name">
+      <input type="text" id="messageInput" placeholder="Message">
+      <button id="sendButton">Send</button>
+    </div>
   </main>
 
-  <!-- Bug Reports Panel -->
-  <div id="bugs" class="bugs"></div>
-
   <!-- Admin Login Popup -->
-  <div id="loginPopup" class="popup">
-    <div class="popup-content">
-      <button class="close-btn" onclick="closeAdminLogin()">X</button>
-      <h3>Admin Login</h3>
-      <input type="text" id="loginName" placeholder="Username">
-      <input type="password" id="loginPass" placeholder="Password">
-      <button onclick="loginAdmin()">Login</button>
+  <div id="adminPopup" class="popup hidden">
+    <div class="popup-inner">
+      <button class="close" id="closeAdminPopup">×</button>
+      <h2>Admin Login</h2>
+      <input type="text" id="adminUser" placeholder="Username">
+      <input type="password" id="adminPass" placeholder="Password">
+      <button id="loginButton">Login</button>
     </div>
   </div>
 
-  <!-- Info Panel -->
-  <div id="infoPanel" class="popup">
-    <div class="popup-content">
-      <button class="close-btn" onclick="closeInfo()">X</button>
-      <h3>© MeltingDev</h3>
-      <div>Your #number: <span id="userNumberDisplay">#0</span></div>
-    </div>
-  </div>
-
-  <!-- Post Form -->
-  <div class="post-form">
-    <input type="text" id="name" placeholder="Name">
-    <textarea id="message" placeholder="Message"></textarea>
-    <input type="text" id="image" placeholder="Image URL (optional)">
-    <button onclick="postMessage()">Post</button>
-  </div>
-
+  <script src="script.js"></script>
 </body>
 </html>
