@@ -3,25 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forumate v4.3</title>
+<title>Forumate v4.6</title>
 <style>
 body{margin:0;font-family:'Segoe UI',Tahoma,sans-serif;background:url('wallpaper.png') no-repeat center center fixed;background-size:cover;color:#fff;}
 body::before{content:"";position:fixed;top:0;left:0;width:100%;height:100%;background: rgba(0,0,0,0.4);z-index:-1;}
 #version{position:fixed;bottom:10px;right:15px;color:rgba(255,255,255,0.7);font-size:14px;z-index:1000;}
 #updateIndicator{font-size:12px;color:lime;display:none;cursor:pointer;}
 
-/* Header circular */
-header{position:fixed;top:10px;left:50%;transform:translateX(-50%);width:90px;height:90px;background: rgba(66,103,178,0.7);backdrop-filter: blur(12px);border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:16px;font-weight:bold;border:2px solid rgba(255,255,255,0.3);z-index:2500;}
-#adminBtn{position:absolute;top:5px;right:5px;width:28px;height:28px;border-radius:50%;background: rgba(244,67,54,0.85);color:white;font-weight:bold;font-size:16px;border:none;cursor:pointer;display:none;z-index:2600;}
+/* Admin "A" button always visible */
+#adminBtn {
+  display: inline-block;
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(244,67,54,0.85);
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  z-index: 3100;
+}
 
 /* Sidebar */
-#sidebar{position:fixed;top:0;left:-260px;width:260px;height:100%;background: rgba(50,50,50,0.6);backdrop-filter: blur(15px);padding:50px 20px 20px 20px;box-shadow:2px 0 15px rgba(0,0,0,0.4);transition:left 0.4s cubic-bezier(0.25,0.8,0.25,1);z-index:1500;border-radius:0 12px 12px 0;overflow:hidden;}
+#sidebar{
+  position:fixed;top:0;left:-260px;width:260px;height:100%;
+  background: rgba(50,50,50,0.6);backdrop-filter: blur(15px);
+  padding:50px 20px 20px 20px;
+  box-shadow:2px 0 15px rgba(0,0,0,0.4);
+  transition:left 0.4s cubic-bezier(0.25,0.8,0.25,1);
+  z-index:1500;border-radius:0 12px 12px 0;overflow:hidden;
+}
 #sidebar.show{left:0;}
 #sidebar .sidebar-buttons{opacity:0;transition:opacity 0.3s;}
 #sidebar.show .sidebar-buttons{opacity:1;}
-#sidebar .sidebar-buttons button{width:100%; margin:10px 0; padding:12px; border-radius:12px; border:none; background: rgba(66,103,178,0.3); color:#fff; font-weight:bold; cursor:pointer; transition:0.3s;}
+#sidebar .sidebar-buttons button{
+  width:100%; margin:10px 0; padding:12px; border-radius:12px; border:none;
+  background: rgba(66,103,178,0.3); color:#fff; font-weight:bold; cursor:pointer; transition:0.3s;
+}
 #sidebar .sidebar-buttons button:hover{background: rgba(66,103,178,0.6);transform: translateX(5px);}
-#sidebar .closeBtn{position:absolute;top:10px;right:10px;background:none;color:white;font-size:24px;cursor:pointer;border:none;z-index:2000;}
+#sidebar .closeBtn{position:absolute;top:10px;right:10px;background:none;color:white;font-size:24px;cursor:pointer;border:none;display:none;z-index:2500;}
+#sidebar.show .closeBtn{display:block;}
 
 /* Hamburger */
 #hamburger{position:fixed;top:15px;left:15px;font-size:26px;cursor:pointer;z-index:2000;color:white;user-select:none;transition:transform 0.3s;}
@@ -50,18 +75,16 @@ input::placeholder, textarea::placeholder{color: rgba(255,255,255,0.7);}
 #loginPopup .closeBtn{align-self:flex-end;font-size:18px;cursor:pointer;background:none;border:none;color:white;margin-bottom:5px;}
 
 @keyframes fadeInSlide{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
-@media(max-width:768px){main{margin-top:110px;} input,textarea,#postBtn,#sidebar .sidebar-buttons button,#reportBugBtn{font-size:14px;padding:10px;} header{width:70px;height:70px;font-size:14px;} #adminBtn{width:28px;height:28px;font-size:14px;top:5px;right:5px;}}
-@media(max-width:480px){main{margin-top:90px;} input,textarea,#postBtn,#sidebar .sidebar-buttons button,#reportBugBtn{font-size:13px;padding:8px;} header{width:60px;height:60px;font-size:12px;} #adminBtn{width:25px;height:25px;font-size:12px;top:5px;right:5px;}}
+@media(max-width:768px){main{margin-top:110px;} input,textarea,#postBtn,#sidebar .sidebar-buttons button,#reportBugBtn{font-size:14px;padding:10px;} #adminBtn{width:28px;height:28px;font-size:14px;top:15px;right:15px;}}
+@media(max-width:480px){main{margin-top:90px;} input,textarea,#postBtn,#sidebar .sidebar-buttons button,#reportBugBtn{font-size:13px;padding:8px;} #adminBtn{width:25px;height:25px;font-size:12px;top:15px;right:15px;}}
 </style>
 </head>
 <body>
 
-<header>Forumate
-  <button id="adminBtn" onclick="showAdminLogin()">A</button>
-</header>
-<div id="version">v4.3 <span id="updateIndicator">⬆</span></div>
-
+<button id="adminBtn" onclick="showAdminLogin()">A</button>
+<div id="version">v4.6 <span id="updateIndicator">⬆</span></div>
 <div id="hamburger" onclick="toggleSidebar()">☰</div>
+
 <div id="sidebar">
   <button class="closeBtn" onclick="toggleSidebar()">×</button>
   <div class="sidebar-buttons">
@@ -94,16 +117,7 @@ input::placeholder, textarea::placeholder{color: rgba(255,255,255,0.7);}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 // Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyA1pylg4PQS_hXhKiLvYcdgh5jbLYhME40",
-  authDomain: "html-test-forum.firebaseapp.com",
-  databaseURL: "https://html-test-forum-default-rtdb.firebaseio.com",
-  projectId: "html-test-forum",
-  storageBucket: "html-test-forum.firebasestorage.app",
-  messagingSenderId: "781492084495",
-  appId: "1:781492084495:web:309c83e29024ba321ba87a",
-  measurementId: "G-H877ZK81ZM"
-};
+const firebaseConfig = {apiKey:"AIzaSyA1pylg4PQS_hXhKiLvYcdgh5jbLYhME40",authDomain:"html-test-forum.firebaseapp.com",databaseURL:"https://html-test-forum-default-rtdb.firebaseio.com",projectId:"html-test-forum",storageBucket:"html-test-forum.firebasestorage.app",messagingSenderId:"781492084495",appId:"1:781492084495:web:309c83e29024ba321ba87a",measurementId:"G-H877ZK81ZM"};
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 const postsDiv=document.getElementById('posts');
@@ -126,10 +140,27 @@ function loginAdmin(){
   if(user==='melting'&&pass==='melting'){
     isAdmin=true;
     document.getElementById('loginPopup').style.display='none';
-    document.getElementById('adminBtn').style.display='inline-block';
     document.getElementById('seeBugsBtn').style.display='block';
     alert('Admin logged in!');
+    loadPosts();
   }else alert('Wrong credentials');
+}
+
+// Load posts permanently
+function loadPosts(){
+  db.ref('posts').on('value', snapshot => {
+    postsDiv.innerHTML='';
+    snapshot.forEach(child => {
+      const post=child.val();
+      const postEl=document.createElement('div');
+      postEl.className='post';
+      if(post.admin) postEl.classList.add('pinned');
+      postEl.innerHTML=`<span class="name ${post.admin?'owner':''}">${post.name}</span>: ${post.message}`;
+      if(post.image) postEl.innerHTML+=`<br><img src="${post.image}" />`;
+      if(isAdmin) postEl.innerHTML+=`<span class="postMenuBtn" onclick="deletePost('${child.key}')">⋮</span>`;
+      postsDiv.appendChild(postEl);
+    });
+  });
 }
 
 // Posting
@@ -138,100 +169,17 @@ function postMessage(){
   const message=document.getElementById('message').value.trim();
   const image=document.getElementById('image').value.trim();
   if(!name||!message) return alert('Name and message required');
-  const timestamp=new Date().toLocaleString();
-  const post={name,message,timestamp};
+  const post={name,message};
   if(image) post.image=image;
   if(isAdmin){post.admin=true;post.name='OWNER';}
   db.ref('posts').push(post);
   document.getElementById('name').value='';document.getElementById('message').value='';document.getElementById('image').value='';
 }
 
-// Bug reporting
-function showBugForm(){
-  viewingBugs=true;
-  postsDiv.innerHTML='';
-  document.getElementById('postBtn').style.display='none';
-  document.getElementById('reportBugBtn').style.display='block';
-}
-function submitBug(){
-  const message=document.getElementById('message').value.trim();
-  if(!message)return alert('Bug description required');
-  const timestamp=new Date().toLocaleString();
-  db.ref('bugs').push({message,timestamp});
-  alert('Bug submitted!');
-  document.getElementById('message').value='';
-  document.getElementById('postBtn').style.display='block';
-  document.getElementById('reportBugBtn').style.display='none';
-  viewingBugs=false;
-  loadPosts();
-}
+// Delete post (admin only)
+function deletePost(key){if(isAdmin) db.ref('posts/'+key).remove();}
 
-// Load posts
-function loadPosts(){
-  db.ref('posts').on('value', snapshot=>{
-    if(viewingBugs) return;
-    postsDiv.innerHTML='';
-    snapshot.forEach(child=>{
-      const data=child.val();
-      const div=document.createElement('div');
-      div.className='post';
-      if(data.pinned) div.classList.add('pinned');
-      let nameClass=(data.admin)?'name owner':'name';
-      let menu=isAdmin?`<span class="postMenuBtn" onclick="removePost('${child.key}')">⋮</span>`:'';
-      let img=data.image?`<img src="${data.image}">`:'';
-      div.innerHTML=`<div class="${nameClass}">${data.name}${menu}</div><div class="message">${data.message}</div>${img}<div class="timestamp">${data.timestamp}</div>`;
-      postsDiv.prepend(div);
-    });
-  });
-}
-
-// Admin actions
-function removePost(key){if(confirm('Delete this post?')) db.ref('posts/'+key).remove();}
-function viewBugs(){
-  if(!isAdmin) return alert('Admin only');
-  viewingBugs=true;
-  postsDiv.innerHTML='';
-  document.getElementById('backBtn').style.display='block';
-  document.getElementById('postBtn').style.display='none';
-  document.getElementById('reportBugBtn').style.display='none';
-  db.ref('bugs').on('value',snapshot=>{
-    postsDiv.innerHTML='';
-    snapshot.forEach(child=>{
-      const bug=child.val();
-      const d=document.createElement('div');
-      d.className='post';
-      d.innerHTML=`<div class="message">${bug.message}</div><div class="timestamp">${bug.timestamp}</div>`;
-      postsDiv.prepend(d);
-    });
-  });
-}
-function backToPosts(){
-  viewingBugs=false;
-  document.getElementById('backBtn').style.display='none';
-  document.getElementById('postBtn').style.display='block';
-  document.getElementById('reportBugBtn').style.display='none';
-  loadPosts();
-}
-
-// Update checker
-async function checkForUpdates() {
-  try {
-    const response = await fetch('https://raw.githubusercontent.com/Meltingfaceemoji/Forumate/main/index.html');
-    if(!response.ok) return;
-    const text = await response.text();
-    const match = text.match(/v(\d+\.\d+)/);
-    if(match){
-      const latest = parseFloat(match[1]);
-      const current = 4.3;
-      if(latest > current) {
-        document.getElementById('updateIndicator').style.display='inline';
-        document.getElementById('updateIndicator').title='New version available: v'+latest;
-      }
-    }
-  } catch(e){console.error('Update check failed', e);}
-}
-
-checkForUpdates();
+// Initial load for all users
 loadPosts();
 </script>
 </body>
