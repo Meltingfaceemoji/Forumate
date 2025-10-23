@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Forumate 7.4 – Simplicity</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
+
   <!-- Wallpaper -->
   <div class="wallpaper"></div>
 
@@ -31,6 +35,7 @@
     <button id="closeSidebar" class="close">×</button>
     <div id="sidebarContent">
       <button id="reportBug">Report Bug</button>
+      <button id="seeBugs">See Bugs</button>
       <button id="settings">Settings</button>
       <button id="logoutButton">Logout</button>
     </div>
@@ -54,6 +59,16 @@
       <input type="text" id="adminUser" placeholder="Username">
       <input type="password" id="adminPass" placeholder="Password">
       <button id="loginButton">Login</button>
+    </div>
+  </div>
+
+  <!-- Info Popup -->
+  <div id="infoPopup" class="popup hidden">
+    <div class="popup-inner">
+      <button class="close" id="closeInfo">×</button>
+      <h2>Info</h2>
+      <p>© MeltingDev</p>
+      <p id="userHash"></p>
     </div>
   </div>
 
