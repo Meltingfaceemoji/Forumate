@@ -3,21 +3,39 @@
 <head>
   <title>Forumate</title>
   <style>
+    /* Full-page background */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f0f2f5;
       margin: 0;
       padding: 0;
+      background: url('wallpaper.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
     }
+
+    /* Overlay for readability */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4); /* Darken wallpaper slightly */
+      z-index: -1;
+    }
+
     header {
-      background-color: #4267B2;
+      background: rgba(66,103,178,0.7); /* semi-transparent blue */
+      backdrop-filter: blur(10px);
       color: white;
       padding: 20px;
       text-align: center;
       font-size: 28px;
       font-weight: bold;
       position: relative;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
     }
+
     #adminBtn {
       position: absolute;
       top: 15px;
@@ -27,47 +45,64 @@
       font-weight: bold;
       font-size: 16px;
       border-radius: 50%;
-      background-color: #f44336;
+      background-color: rgba(244,67,54,0.8);
       color: white;
       border: none;
       cursor: pointer;
+      backdrop-filter: blur(5px);
     }
+
     main {
       max-width: 700px;
       margin: 30px auto;
       padding: 0 20px;
     }
+
     input, textarea {
       width: 100%;
       margin: 8px 0;
       padding: 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.2);
+      color: #fff;
       font-size: 16px;
       box-sizing: border-box;
+      backdrop-filter: blur(10px);
     }
+
+    input::placeholder, textarea::placeholder {
+      color: rgba(255,255,255,0.7);
+    }
+
     button {
-      background-color: #4267B2;
+      background-color: rgba(66,103,178,0.8);
       color: white;
       border: none;
       padding: 12px 20px;
       font-size: 16px;
-      border-radius: 6px;
+      border-radius: 12px;
       cursor: pointer;
       margin-top: 5px;
+      backdrop-filter: blur(5px);
     }
-    button:hover { background-color: #365899; }
+
+    button:hover { background-color: rgba(66,103,178,1); }
+
     .post {
-      background-color: white;
-      border-radius: 8px;
-      padding: 12px 15px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 15px 20px;
       margin-bottom: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
     }
-    .post:nth-child(even) { background-color: #f5f6f7; }
-    .name { font-weight: bold; color: #333; }
-    .message { margin: 5px 0; color: #555; }
-    .timestamp { font-size: 0.8em; color: #888; }
+
+    .post:nth-child(even) { background: rgba(255,255,255,0.1); }
+
+    .name { font-weight: bold; color: #fff; }
+    .message { margin: 5px 0; color: #eee; }
+    .timestamp { font-size: 0.8em; color: rgba(255,255,255,0.7); }
   </style>
 </head>
 <body>
@@ -81,7 +116,6 @@
   <div id="posts"></div>
 </main>
 
-<!-- Admin reset button -->
 <button id="adminBtn" onclick="adminPrompt()">A</button>
 
 <!-- Firebase -->
