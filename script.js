@@ -3,7 +3,88 @@ const firebaseConfig = {
   apiKey: "AIzaSyA1pylg4PQS_hXhKiLvYcdgh5jbLYhME40",
   authDomain: "html-test-forum.firebaseapp.com",
   databaseURL: "https://html-test-forum-default-rtdb.firebaseio.com",
-  projectId: "html-test-forum",
+  projectId: "// ===== Sidebar =====
+const sidebar = document.getElementById('sidebar');
+const menuButton = document.getElementById('menuButton');
+const closeSidebar = document.getElementById('closeSidebar');
+
+menuButton.onclick = () => {
+  sidebar.classList.add('visible');
+  closeSidebar.style.display = 'block';
+};
+closeSidebar.onclick = () => {
+  sidebar.classList.remove('visible');
+  closeSidebar.style.display = 'none';
+};
+
+// ===== Admin Popup =====
+const adminPopup = document.getElementById('adminPopup');
+const adminButton = document.getElementById('adminButton');
+const closeAdminPopup = document.getElementById('closeAdminPopup');
+const loginButton = document.getElementById('loginButton');
+
+const ADMIN_USERNAME = "melting";
+const ADMIN_PASSWORD = "melting";
+
+adminButton.onclick = () => adminPopup.classList.remove('hidden');
+closeAdminPopup.onclick = () => adminPopup.classList.add('hidden');
+
+loginButton.onclick = () => {
+  const username = document.getElementById('adminUser').value.trim();
+  const password = document.getElementById('adminPass').value.trim();
+
+  if (username.toLowerCase() === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    alert("Admin logged in!");
+    adminPopup.classList.add('hidden');
+    // TODO: Enable admin features here
+  } else {
+    alert("Wrong credentials.");
+  }
+};
+
+// ===== Info Popup =====
+const infoPopup = document.getElementById('infoPopup');
+const infoButton = document.getElementById('infoButton');
+const closeInfo = document.getElementById('closeInfo');
+
+infoButton.onclick = () => infoPopup.classList.remove('hidden');
+closeInfo.onclick = () => infoPopup.classList.add('hidden');
+
+// ===== Messages =====
+const sendButton = document.getElementById('sendButton');
+const nameInput = document.getElementById('nameInput');
+const messageInput = document.getElementById('messageInput');
+const messages = document.getElementById('messages');
+
+const lastNameKey = "forumateLastName";
+
+// Load last used name
+if(localStorage.getItem(lastNameKey)){
+  nameInput.value = localStorage.getItem(lastNameKey);
+}
+
+sendButton.onclick = () => {
+  const name = nameInput.value.trim();
+  const msg = messageInput.value.trim();
+  if(!name || !msg) return;
+
+  // Save last used name
+  localStorage.setItem(lastNameKey, name);
+
+  // Create message element
+  const div = document.createElement('div');
+  div.className = 'message';
+  div.innerHTML = `<b>${name}:</b> ${msg}`;
+
+  messages.appendChild(div);
+  messageInput.value = '';
+  messages.scrollTop = messages.scrollHeight;
+};
+
+// Press Enter to send message
+messageInput.addEventListener('keypress', e => {
+  if(e.key === 'Enter') sendButton.click();
+});",
   storageBucket: "html-test-forum.firebasestorage.app",
   messagingSenderId: "781492084495",
   appId: "1:781492084495:web:309c83e29024ba321ba87a",
