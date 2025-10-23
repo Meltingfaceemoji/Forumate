@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forumate v1.0</title>
+<title>Forumate v4.2</title>
 <style>
 body{margin:0;font-family:'Segoe UI',Tahoma,sans-serif;background:url('wallpaper.png') no-repeat center center fixed;background-size:cover;color:#fff;}
 body::before{content:"";position:fixed;top:0;left:0;width:100%;height:100%;background: rgba(0,0,0,0.4);z-index:-1;}
-#version{position:fixed;bottom:10px;right:15px;color:rgba(255,255,255,0.7);font-size:14px;z-index:1000;}
+#version{position:fixed;bottom:10px;right:15px;color:rgba(255,255,255,0.7);font-size:14px;z-index:1000;content:'v4.2';}
 
 /* Header circular */
 header{position:fixed;top:10px;left:50%;transform:translateX(-50%);width:90px;height:90px;background: rgba(66,103,178,0.7);backdrop-filter: blur(12px);border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:16px;font-weight:bold;border:2px solid rgba(255,255,255,0.3);z-index:1000;}
@@ -15,23 +15,31 @@ header{position:fixed;top:10px;left:50%;transform:translateX(-50%);width:90px;he
 
 /* Sidebar */
 #sidebar{
-  position:fixed; top:0; left:-260px; width:260px; height:100%;
-  background: rgba(50,50,50,0.6); backdrop-filter: blur(15px);
-  padding:50px 20px 20px 20px; box-shadow:2px 0 15px rgba(0,0,0,0.4);
-  transition:left 0.4s cubic-bezier(0.25,0.8,0.25,1); z-index:1010;
-  border-radius:0 12px 12px 0; overflow:hidden;
+  position:fixed;
+  top:0; left:-260px;
+  width:260px; height:100%;
+  background: rgba(50,50,50,0.6);
+  backdrop-filter: blur(15px);
+  padding:50px 20px 20px 20px; 
+  box-shadow:2px 0 15px rgba(0,0,0,0.4);
+  transition:left 0.4s cubic-bezier(0.25,0.8,0.25,1);
+  z-index:1500; 
+  border-radius:0 12px 12px 0;
+  overflow:hidden;
 }
 #sidebar.show{left:0;}
+#sidebar .sidebar-buttons{opacity:0;transition:opacity 0.3s;}
+#sidebar.show .sidebar-buttons{opacity:1;}
 #sidebar .sidebar-buttons button{
   width:100%; margin:10px 0; padding:12px;
   border-radius:12px; border:none; background: rgba(66,103,178,0.3);
   color:#fff; font-weight:bold; cursor:pointer; transition:0.3s;
 }
-#sidebar .sidebar-buttons button:hover{background: rgba(66,103,178,0.6); transform:translateX(5px);}
-#sidebar .closeBtn{position:absolute;top:10px;right:10px;background:none;color:white;font-size:24px;cursor:pointer;border:none;z-index:1020;}
+#sidebar .sidebar-buttons button:hover{background: rgba(66,103,178,0.6);transform: translateX(5px);}
+#sidebar .closeBtn{position:absolute;top:10px;right:10px;background:none;color:white;font-size:24px;cursor:pointer;border:none;z-index:1010;}
 
 /* Hamburger */
-#hamburger{position:fixed;top:15px;left:15px;font-size:26px;cursor:pointer;z-index:1020;color:white;user-select:none;transition:transform 0.3s;}
+#hamburger{position:fixed;top:15px;left:15px;font-size:26px;cursor:pointer;z-index:2000;color:white;user-select:none;transition:transform 0.3s;}
 #hamburger:hover{transform:scale(1.1);}
 
 /* Main forum */
@@ -66,7 +74,7 @@ input::placeholder, textarea::placeholder{color: rgba(255,255,255,0.7);}
 <header>Forumate
   <button id="adminBtn" onclick="showAdminLogin()">A</button>
 </header>
-<div id="version">v1.0</div>
+<div id="version">v4.2</div>
 
 <div id="hamburger" onclick="toggleSidebar()">☰</div>
 <div id="sidebar">
@@ -100,6 +108,7 @@ input::placeholder, textarea::placeholder{color: rgba(255,255,255,0.7);}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyA1pylg4PQS_hXhKiLvYcdgh5jbLYhME40",
   authDomain: "html-test-forum.firebaseapp.com",
@@ -115,7 +124,7 @@ const db=firebase.database();
 const postsDiv=document.getElementById('posts');
 let isAdmin=false, viewingBugs=false;
 
-// Sidebar
+// Sidebar toggle
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('show');}
 
 // Admin login
