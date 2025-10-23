@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Forumate 7.4 – Simplicity</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Firebase -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
@@ -31,7 +31,7 @@
   </header>
 
   <!-- Sidebar -->
-  <aside id="sidebar" class="sidebar hidden">
+  <aside id="sidebar" class="sidebar">
     <button id="closeSidebar" class="close">×</button>
     <div id="sidebarContent">
       <button id="reportBug">Report Bug</button>
@@ -41,9 +41,9 @@
     </div>
   </aside>
 
-  <!-- Main Content -->
+  <!-- Main Chat -->
   <main id="mainContent">
-    <div class="message-container" id="messages"></div>
+    <div id="messages" class="message-container"></div>
     <div class="input-container">
       <input type="text" id="nameInput" placeholder="Name">
       <input type="text" id="messageInput" placeholder="Message">
