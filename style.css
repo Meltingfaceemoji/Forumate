@@ -1,46 +1,47 @@
-/* ==== Forumate 7.4 - Codename: Simplicity Polished Fix ==== */
-/* Layout designed to fix wallpaper, top bar, sidebar, and mobile scaling */
+/* ==== Forumate 7.4 – Simplicity Polished CSS ==== */
 
-html, body {
+/* Reset */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html, body {
   width: 100%;
   height: 100%;
-  font-family: "Segoe UI", Roboto, sans-serif;
-  color: #fff;
+  font-family: "Segoe UI", sans-serif;
+  color: white;
   overflow: hidden;
 }
 
-/* === Wallpaper background === */
+/* Wallpaper */
 .wallpaper {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
-  background: url("wallpaper.png") center center / cover no-repeat;
-  z-index: -2;
-  filter: brightness(0.8);
+  background: url("Wallpaper.png") center center / cover no-repeat;
+  z-index: -1;
+  filter: brightness(0.85);
 }
 
-/* === Top Bar === */
+/* Top Bar */
 .topbar {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 50px;
-  background: rgba(20, 20, 20, 0.6);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
+  padding: 0 10px;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(8px);
   z-index: 100;
 }
 
-/* Bar contents */
 .topbar .left,
 .topbar .center,
 .topbar .right {
@@ -49,24 +50,24 @@ html, body {
   gap: 10px;
 }
 
-/* App title */
+/* Title */
 .title {
   font-size: 1.2em;
   font-weight: 600;
 }
 
-/* Buttons on bar */
+/* Buttons */
 button.hamburger,
 button.info-btn,
 button.admin-btn {
   background: rgba(255, 255, 255, 0.15);
   border: none;
   color: white;
-  font-size: 1.1em;
   padding: 6px 10px;
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 1.1em;
+  transition: background 0.2s ease;
 }
 
 button.hamburger:hover,
@@ -75,22 +76,26 @@ button.admin-btn:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
+/* Version */
 #version {
   font-size: 0.9em;
   opacity: 0.9;
-  margin-right: 8px;
 }
 
-/* === Sidebar === */
+#updateStatus {
+  font-size: 0.75em;
+  opacity: 0.7;
+}
+
+/* Sidebar */
 .sidebar {
   position: fixed;
   top: 50px;
   left: 0;
   width: 260px;
   height: calc(100% - 50px);
-  background: rgba(30, 30, 30, 0.7);
-  backdrop-filter: blur(12px);
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4);
+  background: rgba(30, 30, 30, 0.8);
+  backdrop-filter: blur(10px);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 90;
@@ -102,17 +107,17 @@ button.admin-btn:hover {
 
 .sidebar .close {
   position: absolute;
-  top: 12px;
-  right: 14px;
+  top: 10px;
+  right: 10px;
+  font-size: 1.4em;
   background: none;
   border: none;
-  font-size: 1.4em;
   color: white;
   cursor: pointer;
 }
 
 #sidebarContent {
-  margin-top: 60px;
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -122,9 +127,9 @@ button.admin-btn:hover {
 #sidebarContent button {
   background: rgba(255, 255, 255, 0.15);
   border: none;
+  color: white;
   padding: 10px;
   border-radius: 10px;
-  color: white;
   text-align: left;
   cursor: pointer;
   transition: background 0.2s ease;
@@ -134,13 +139,13 @@ button.admin-btn:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* === Main Chat === */
+/* Main Content */
 #mainContent {
+  padding-top: 50px;
+  height: calc(100% - 50px);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: 100%;
-  padding-top: 60px;
 }
 
 .message-container {
@@ -159,15 +164,14 @@ button.admin-btn:hover {
   backdrop-filter: blur(5px);
 }
 
-.message .owner {
-  color: #ff4c4c;
+.owner {
+  color: #ff5555;
   font-weight: bold;
 }
 
-/* === Input area === */
+/* Input Container */
 .input-container {
   display: flex;
-  align-items: center;
   gap: 8px;
   padding: 10px;
   background: rgba(20, 20, 20, 0.6);
@@ -176,39 +180,35 @@ button.admin-btn:hover {
 
 .input-container input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.1);
   border: none;
-  padding: 8px;
   border-radius: 8px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.1);
   color: white;
 }
 
 .input-container button {
-  background: rgba(255, 255, 255, 0.2);
   border: none;
-  color: white;
-  padding: 8px 12px;
   border-radius: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
 .input-container button:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* === Popups === */
+/* Popups */
 .popup {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  inset: 0;
+  background: rgba(0,0,0,0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 200;
 }
 
 .popup.hidden {
@@ -216,60 +216,25 @@ button.admin-btn:hover {
 }
 
 .popup-inner {
-  background: rgba(25, 25, 25, 0.9);
+  background: rgba(25,25,25,0.9);
   padding: 20px;
-  border-radius: 14px;
+  border-radius: 16px;
   width: 300px;
   text-align: center;
-  backdrop-filter: blur(10px);
 }
 
-.popup-inner input {
-  width: 90%;
-  padding: 8px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.popup-inner button {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* === Scrollbars === */
-.message-container::-webkit-scrollbar {
-  width: 8px;
-}
-.message-container::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-}
-
-/* === Mobile Adjustments === */
+/* Mobile */
 @media (max-width: 600px) {
   .topbar {
     height: 46px;
-    justify-content: space-between;
     padding: 0 8px;
-  }
-
-  #version {
-    font-size: 0.8em;
   }
 
   .sidebar {
     width: 100%;
-    height: 55%;
+    height: 60%;
     top: 46px;
     transform: translateY(-100%);
-    transition: transform 0.3s ease;
   }
 
   .sidebar.visible {
