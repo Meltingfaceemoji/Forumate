@@ -1,73 +1,63 @@
-/* ---------------- General ---------------- */
+/* ---------------- Body & Background ---------------- */
 body, html {
   margin: 0;
   padding: 0;
   font-family: "Segoe UI", sans-serif;
-  background: url('PICTURE.jpg') no-repeat center center fixed;
-  background-size: cover;
-  color: #333;
   height: 100%;
   overflow-x: hidden;
+  background: url('PICTURE.jpg') no-repeat center center fixed;
+  background-size: cover;
 }
 
-/* ---------------- Glass containers ---------------- */
-.glass {
-  background: rgba(225,242,255,0.20);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(77,166,255,0.12);
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-/* ---------------- Top buttons (circular) ---------------- */
-.top-button {
+/* ---------------- Top Buttons ---------------- */
+.top-buttons-container {
   position: fixed;
   top: 16px;
-  border-radius: 50%;
+  left: 16px;
+  display: flex;
+  gap: 16px;
+  z-index: 1400;
+}
+
+.top-button {
   width: 50px;
   height: 50px;
+  border-radius: 50%;
   border: none;
   background: rgba(225,242,255,0.30);
   backdrop-filter: blur(8px);
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
   color: #0078FF;
+  font-weight: bold;
+  cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  transition: all 0.25s ease;
+  transition: 0.25s ease;
 }
 
 .top-button:hover {
   background: rgba(225,242,255,0.45);
 }
 
-/* Admin login button (A) */
-#adminBtn { left: 16px; z-index:1400; }
-
-/* Hamburger menu button (3 lines) */
-#hamburgerBtn { left: 80px; z-index:1400; }
-
 /* ---------------- Sidebar ---------------- */
 .sidebar {
   position: fixed;
-  left: 0;
   top: 0;
-  bottom: 0;
+  left: 0;
   width: 220px;
-  padding: 18px 12px;
-  padding-bottom: 160px; /* room for composer */
+  height: 100%;
   background: rgba(225,242,255,0.20);
   backdrop-filter: blur(10px);
   border-right: 1px solid rgba(77,166,255,0.12);
-  z-index: 1300;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  padding: 18px 12px;
+  padding-bottom: 160px;
   transform: translateX(-100%);
   transition: transform 0.28s cubic-bezier(.2,.9,.2,1);
+  z-index: 1300;
 }
 
 .sidebar.show {
@@ -84,19 +74,19 @@ body, html {
   font-weight: bold;
   cursor: pointer;
   text-align: left;
-  transition: all 0.2s ease;
 }
 
 .sidebar button:hover {
   background: rgba(225,242,255,0.40);
 }
 
-/* ---------------- Chat area ---------------- */
+/* ---------------- Chat Area ---------------- */
 .chat-container {
   margin-left: 20px;
-  padding: 80px 20px 100px 20px; /* top for circular buttons, bottom for composer */
+  padding: 80px 20px 100px 20px; /* space for top buttons and composer */
 }
 
+/* Chat message styling */
 .chat-message {
   margin-bottom: 12px;
   padding: 8px 12px;
@@ -109,7 +99,7 @@ body, html {
   color: #0078FF;
 }
 
-/* 3 dots menu */
+/* 3-dot message menu */
 .message-menu {
   position: relative;
 }
@@ -146,11 +136,11 @@ body, html {
   left: 0;
   right: 0;
   padding: 10px;
-  background: rgba(225,242,255,0.20);
-  backdrop-filter: blur(10px);
   display: flex;
   gap: 10px;
   z-index: 1200;
+  background: rgba(225,242,255,0.20);
+  backdrop-filter: blur(10px);
 }
 
 .composer input[type="text"] {
