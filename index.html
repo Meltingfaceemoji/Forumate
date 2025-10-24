@@ -1,92 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forumate v7.5</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forumate</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
-  <div class="wallpaper"></div>
 
-  <!-- Topbar -->
-  <div class="topbar">
-    <div class="left">
-      <button id="menuBtn" class="icon-btn">&#9776;</button>
-      <span class="brand">Forumate</span>
-    </div>
-    <div class="center">
-      <span class="versionLabel"></span>
-    </div>
-    <div class="right">
-      <button id="adminBtn" class="icon-btn">A</button>
-      <button id="infoBtn" class="icon-btn">i</button>
+<div class="topbar glass">
+  <button id="adminBtn">A</button>
+  <div class="title">Forumate</div>
+  <span class="versionLabel"></span>
+  <button id="infoBtn">ℹ️</button>
+</div>
+
+<div id="sidebar" class="sidebar glass">
+  <button id="menuBtn">☰</button>
+  <button id="seeBugsBtn">See Bugs</button>
+  <button id="reportBugBtn">Report Bug</button>
+</div>
+
+<div id="posts" class="posts"></div>
+
+<div class="composer glass">
+  <input type="text" id="nameInput" placeholder="Name">
+  <textarea id="messageInput" placeholder="Message"></textarea>
+  <input type="text" id="imageInput" placeholder="Image URL (optional)">
+  <div class="composer-row">
+    <button id="postBtn" class="btn primary">Post</button>
+  </div>
+</div>
+
+<!-- Admin Modal -->
+<div id="adminModal" class="modal hidden">
+  <div class="modal-card">
+    <h3>Admin Login</h3>
+    <input type="text" id="adminUser" placeholder="Username">
+    <input type="password" id="adminPass" placeholder="Password">
+    <div class="modal-actions">
+      <button id="adminLoginBtn" class="btn primary">Login</button>
+      <button id="closeAdminModal" class="btn secondary">X</button>
     </div>
   </div>
+</div>
 
-  <!-- Sidebar -->
-  <div id="sidebar" class="sidebar">
-    <button class="side-btn" id="reportBugBtn">Report Bug</button>
-    <button class="side-btn" id="seeBugsBtn" style="display:none;">See Bugs</button>
-    <div class="sidebar-footer">Online: <span id="onlineCount">0</span></div>
+<!-- Info Modal -->
+<div id="infoModal" class="modal hidden">
+  <div class="modal-card">
+    <h3>Info</h3>
+    <p>©MeltingDev</p>
+    <p>Your ID: <span id="userNumber"></span></p>
+    <button id="resetChatBtn" class="btn primary">Reset Chat</button>
+    <button id="closeInfoModal" class="btn secondary">Close</button>
   </div>
+</div>
 
-  <!-- Main -->
-  <div class="main">
-    <div class="posts" id="posts"></div>
-    <div class="composer glass">
-      <input id="nameInput" type="text" placeholder="Name">
-      <textarea id="messageInput" placeholder="Message"></textarea>
-      <input id="imageInput" type="text" placeholder="Image URL (optional)">
-      <div class="composer-row">
-        <button id="postBtn" class="btn primary">Post</button>
-        <button id="submitBugBtn" class="btn secondary" style="display:none;">Submit Bug</button>
-      </div>
-    </div>
+<!-- Bugs Modal -->
+<div id="bugsModal" class="modal hidden">
+  <div class="modal-card wide">
+    <h3>Bug Reports</h3>
+    <div id="bugsList" class="posts"></div>
+    <button id="closeBugsModal" class="btn secondary">Close</button>
   </div>
+</div>
 
-  <!-- Admin Modal -->
-  <div id="adminModal" class="modal hidden">
-    <div class="modal-card">
-      <h3>Admin Login</h3>
-      <input id="adminUser" class="modal-input" placeholder="Username">
-      <input id="adminPass" type="password" class="modal-input" placeholder="Password">
-      <div class="modal-actions">
-        <button id="adminLoginBtn" class="btn primary">Login</button>
-        <button id="closeAdminModal" class="btn secondary">Cancel</button>
-      </div>
-      <button id="logoutBtn" class="btn secondary" style="display:none;">Logout Admin</button>
-    </div>
-  </div>
+<div id="toast" class="toast"></div>
 
-  <!-- Bugs Modal -->
-  <div id="bugsModal" class="modal hidden">
-    <div class="modal-card wide">
-      <h3>Bug Reports</h3>
-      <div id="bugsList"></div>
-      <div class="modal-actions">
-        <button id="closeBugsModal" class="btn secondary">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Info Modal -->
-  <div id="infoModal" class="modal hidden">
-    <div class="modal-card">
-      <h3>Info</h3>
-      <p>© MeltingDev</p>
-      <p>Your # is: <span id="userNumber">0</span></p>
-      <button id="resetChatBtn" class="btn secondary">Reset Chat</button>
-      <div class="modal-actions">
-        <button id="closeInfoModal" class="btn secondary">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="toast" class="toast"></div>
-
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
