@@ -2,7 +2,7 @@
 // Firebase Config
 // ======================
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyA1pylg4PQS_hXhKiLvYcdgh5jbLYhME40",
   authDomain: "html-test-forum.firebaseapp.com",
   databaseURL: "https://html-test-forum-default-rtdb.firebaseio.com",
   projectId: "html-test-forum",
