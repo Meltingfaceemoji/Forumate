@@ -1,90 +1,102 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Forumate v7.4 — Simplicity</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Forumate v7.4 — Codename Simplicity</title>
+  <link rel="stylesheet" href="style.css">
   <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
+  <!-- Wallpaper (exact name: Wallpaper.png) -->
   <div class="wallpaper" aria-hidden="true"></div>
 
+  <!-- Top bar -->
   <header class="topbar">
     <div class="left">
-      <button id="menuButton" class="hamburger" aria-label="menu">☰</button>
-      <span class="title">Forumate</span>
+      <button id="menuBtn" class="icon-btn" aria-label="menu">☰</button>
+      <div class="brand">Forumate</div>
     </div>
 
     <div class="center">
-      <span id="version">v7.4</span>
-      <span id="lastUpdated">— last updated 2025-10-23</span>
+      <div id="versionLabel">v7.4</div>
+      <div id="updateCheck" class="update-small">checking…</div>
     </div>
 
     <div class="right">
-      <button id="infoButton" class="round-btn" title="Info">i</button>
-      <button id="adminButton" class="round-btn" title="Admin">A</button>
+      <button id="infoBtn" class="icon-btn" title="Info">i</button>
+      <button id="adminBtn" class="icon-btn" title="Admin">A</button>
     </div>
   </header>
 
+  <!-- Sidebar -->
   <aside id="sidebar" class="sidebar" aria-hidden="true">
     <button id="closeSidebar" class="sidebar-close" aria-label="close">✕</button>
-    <div id="sidebarContent" class="sidebar-content">
-      <button id="reportBug" class="sidebar-btn">Report a bug</button>
-      <button id="seeBugs" class="sidebar-btn" style="display:none">See bug reports</button>
-      <button id="pinnedView" class="sidebar-btn">Pinned posts</button>
-      <button id="settingsBtn" class="sidebar-btn">Settings</button>
-      <button id="logoutButton" class="sidebar-btn" style="display:none">Logout admin</button>
-      <div id="onlineCount" class="online-count">Online: 0</div>
+    <div class="sidebar-inner">
+      <button id="reportBugBtn" class="side-btn">Report a bug</button>
+      <button id="seeBugsBtn" class="side-btn" style="display:none">See bug reports</button>
+      <button id="pinnedBtn" class="side-btn">Pinned posts</button>
+      <button id="settingsBtn" class="side-btn">Settings</button>
+      <button id="logoutBtn" class="side-btn" style="display:none">Logout admin</button>
+      <div class="sidebar-footer">
+        <div id="onlineCount">Online: 0</div>
+        <div id="lastUpdated" class="muted">Last updated: 2025-10-23</div>
+      </div>
     </div>
   </aside>
 
-  <main id="mainContent">
+  <!-- Main -->
+  <main class="main">
     <section id="posts" class="posts" aria-live="polite"></section>
-    <div class="input-area">
-      <input id="nameInput" type="text" placeholder="Name" autocomplete="name" />
-      <input id="imageInput" type="text" placeholder="Image URL (optional)" />
-      <textarea id="messageInput" rows="2" placeholder="Message"></textarea>
-      <div class="input-row">
-        <button id="sendButton" class="primary">Post</button>
-        <button id="reportSubmitButton" class="secondary" style="display:none">Submit Bug</button>
+
+    <section class="composer">
+      <input id="nameInput" placeholder="Name (keeps # number)" autocomplete="name">
+      <input id="imageInput" placeholder="Image URL (optional)" autocomplete="url">
+      <textarea id="messageInput" rows="2" placeholder="Message (Shift+Enter = newline)"></textarea>
+      <div class="composer-row">
+        <button id="postBtn" class="btn primary">Post</button>
+        <button id="submitBugBtn" class="btn secondary" style="display:none">Submit bug</button>
       </div>
-    </div>
+    </section>
   </main>
 
-  <!-- Admin login popup -->
-  <div id="adminPopup" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
+  <!-- Admin login modal -->
+  <div id="adminModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-card glass">
-      <button class="modal-close" id="closeAdminPopup">✕</button>
-      <h3>Admin login</h3>
-      <input id="adminUser" type="text" placeholder="username" />
-      <input id="adminPass" type="password" placeholder="password" />
+      <button class="modal-close" id="closeAdminModal">✕</button>
+      <h3>Admin Login</h3>
+      <input id="adminUser" placeholder="username">
+      <input id="adminPass" type="password" placeholder="password">
       <div class="modal-actions">
-        <button id="loginButton" class="primary">Login</button>
+        <button id="adminLoginBtn" class="btn primary">Login</button>
       </div>
     </div>
   </div>
 
-  <!-- Info popup -->
-  <div id="infoPopup" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
+  <!-- Info modal -->
+  <div id="infoModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-card glass">
-      <button class="modal-close" id="closeInfo">✕</button>
+      <button class="modal-close" id="closeInfoModal">✕</button>
       <h3>Info</h3>
       <p>© MeltingDev</p>
-      <p id="userHash">#0000</p>
+      <p>Your ID: <span id="userNumber">#0</span></p>
+      <p id="versionFull" class="muted">v7.4 — Codename Simplicity</p>
     </div>
   </div>
 
-  <!-- Bug admin view -->
-  <div id="bugsPanel" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
+  <!-- Bugs modal (admin) -->
+  <div id="bugsModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-card glass wide">
-      <button class="modal-close" id="closeBugs">✕</button>
+      <button class="modal-close" id="closeBugsModal">✕</button>
       <h3>Bug reports</h3>
-      <div id="bugsList"></div>
+      <div id="bugsList" class="bugs-list"></div>
     </div>
   </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
 
   <script src="script.js" defer></script>
 </body>
