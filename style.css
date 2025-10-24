@@ -2,25 +2,25 @@
    Reset & Base
 ====================== */
 * { margin:0; padding:0; box-sizing:border-box; font-family:Segoe UI, sans-serif; }
-body, html { width:100%; height:100%; overflow-x:hidden; background:#000; }
+body, html { width:100%; height:100%; overflow-x:hidden; background:#e0f0ff; }
 
-/* Wallpaper */
+/* Wallpaper with fallback */
 .wallpaper {
   position: fixed;
   inset:0;
-  background: url("Wallpaper.png") no-repeat center center fixed;
-  background-size: cover;
   z-index: -1;
+  background: url("Wallpaper.png"), url("wallpaper.png") no-repeat center center fixed;
+  background-size: cover;
 }
 
-/* Glass Effect */
+/* Glass Effect - Light */
 .glass {
-  background: rgba(20,30,60,0.6);
+  background: rgba(255,255,255,0.6);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(150,200,255,0.3);
+  border: 1px solid rgba(100,150,255,0.3);
   border-radius: 16px;
   padding: 12px;
-  color: #fff;
+  color: #000;
   transition: all 0.3s ease;
 }
 
@@ -35,18 +35,18 @@ body, html { width:100%; height:100%; overflow-x:hidden; background:#000; }
   justify-content:space-between;
   align-items:center;
   padding:0.5rem 1rem;
-  background: rgba(20,30,60,0.7);
+  background: rgba(255,255,255,0.7);
   backdrop-filter: blur(12px);
-  border-bottom:1px solid rgba(150,200,255,0.4);
+  border-bottom:1px solid rgba(100,150,255,0.4);
   border-radius:0 0 12px 12px;
   z-index:100;
 }
 .topbar .left, .topbar .center, .topbar .right { display:flex; align-items:center; }
-.topbar .brand { margin-left:0.5rem; font-weight:700; font-size:1.3rem; }
-.versionLabel { margin:0 0.5rem; font-weight:500; }
-.updateSmall { font-size:0.7rem; color:#aad; }
+.topbar .brand { margin-left:0.5rem; font-weight:700; font-size:1.3rem; color:#004080; }
+.versionLabel { margin:0 0.5rem; font-weight:500; color:#004080; }
+.updateSmall { font-size:0.7rem; color:#0060c0; }
 .icon-btn {
-  background:none; border:none; color:#fff; font-size:1.2rem;
+  background:none; border:none; color:#004080; font-size:1.2rem;
   padding:0.3rem 0.6rem; cursor:pointer; border-radius:50%;
 }
 .icon-btn:hover { background:rgba(100,150,255,0.3); }
@@ -62,9 +62,9 @@ body, html { width:100%; height:100%; overflow-x:hidden; background:#000; }
   max-width:80%;
   transform:translateX(-100%);
   transition: transform 0.3s ease;
-  background: rgba(20,30,60,0.95);
+  background: rgba(255,255,255,0.95);
   backdrop-filter: blur(12px);
-  border-right:1px solid rgba(150,200,255,0.3);
+  border-right:1px solid rgba(100,150,255,0.3);
   border-radius:0 12px 12px 0;
   z-index:90;
   display:flex;
@@ -74,16 +74,16 @@ body, html { width:100%; height:100%; overflow-x:hidden; background:#000; }
 .sidebar-inner { margin-top:3rem; display:flex; flex-direction:column; gap:0.5rem; }
 .side-btn {
   padding:0.6rem 1rem;
-  background: rgba(20,30,60,0.6);
+  background: rgba(255,255,255,0.6);
   border:none;
   border-radius:12px;
-  color:#fff;
+  color:#004080;
   text-align:left;
   cursor:pointer;
   transition:all 0.2s ease;
 }
 .side-btn:hover { background: rgba(100,150,255,0.3); }
-.sidebar-footer { margin-top:auto; padding:0.5rem 1rem; font-size:0.8rem; color:#aad; }
+.sidebar-footer { margin-top:auto; padding:0.5rem 1rem; font-size:0.8rem; color:#0060c0; }
 
 /* ======================
    Main Content
@@ -93,21 +93,22 @@ body, html { width:100%; height:100%; overflow-x:hidden; background:#000; }
 .post {
   padding:0.8rem 1rem;
   border-radius:16px;
-  background:rgba(50,60,80,0.5);
-  border:1px solid rgba(150,200,255,0.2);
+  background:rgba(255,255,255,0.6);
+  border:1px solid rgba(100,150,255,0.2);
   position:relative;
   transition:all 0.3s ease;
+  color:#004080;
 }
 .post img { max-width:100%; border-radius:12px; margin-top:0.5rem; }
 .post .owner { color:red; font-weight:700; }
-.post .post-meta { font-size:0.75rem; color:#aad; position:absolute; top:6px; right:12px; }
+.post .post-meta { font-size:0.75rem; color:#0060c0; position:absolute; top:6px; right:12px; }
 
 /* ======================
    Composer
 ====================== */
 .composer { display:flex; flex-direction:column; gap:0.4rem; margin-top:1rem; }
-.composer input, .composer textarea { width:100%; border-radius:12px; border:1px solid rgba(150,200,255,0.3); padding:0.6rem; background:rgba(20,30,60,0.6); color:#fff; resize:none; }
-.composer input::placeholder, .composer textarea::placeholder{ color:#aad; }
+.composer input, .composer textarea { width:100%; border-radius:12px; border:1px solid rgba(100,150,255,0.3); padding:0.6rem; background:rgba(255,255,255,0.6); color:#004080; resize:none; }
+.composer input::placeholder, .composer textarea::placeholder{ color:#0060c0; }
 .composer-row { display:flex; justify-content:flex-end; gap:0.4rem; }
 .btn { padding:0.5rem 0.9rem; border:none; border-radius:12px; cursor:pointer; transition:all 0.2s ease; }
 .btn.primary { background:rgba(100,150,255,0.8); color:#fff; }
@@ -122,8 +123,7 @@ body, html { width:100%; height:100%; overflow-x:hidden; background:#000; }
 .modal.hidden { display:none; }
 .modal-card { position:relative; max-width:400px; width:90%; border-radius:16px; }
 .modal-card.wide { max-width:700px; }
-.modal-close { position:absolute; top:0.5rem; right:0.5rem; background:none; border:none; color:#fff; font-size:1.3rem; cursor:pointer; border-radius:50%; padding:0.2rem; }
-.modal-input { width:100%; margin:0.3rem 0; padding:0.5rem; border-radius:12px; border:1px solid rgba(150,200,255,0.3); background:rgba(20,30,60,0.6); color:#fff; }
+.modal-input { width:100%; margin:0.3rem 0; padding:0.5rem; border-radius:12px; border:1px solid rgba(100,150,255,0.3); background:rgba(255,255,255,0.6); color:#004080; }
 .modal-actions { display:flex; justify-content:flex-end; gap:0.3rem; }
 
 /* ======================
@@ -142,4 +142,3 @@ body, html { width:100%; height:100%; overflow-x:hidden; background:#000; }
   .sidebar { width:80%; top:0; left:0; border-radius:0; }
   .posts { gap:0.8rem; }
 }
-
