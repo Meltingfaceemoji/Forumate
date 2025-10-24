@@ -1,5 +1,5 @@
 // ======================
-// Firebase Config
+// Firebase Initialization
 // ======================
 const firebaseConfig = {
   apiKey: "AIzaSyA1pylg4PQS_hXhKiLvYcdgh5jbLYhME40",
@@ -11,184 +11,203 @@ const firebaseConfig = {
   appId: "1:781492084495:web:309c83e29024ba321ba87a",
   measurementId: "G-H877ZK81ZM"
 };
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 // ======================
-// Elements
+// DOM Elements
 // ======================
-const postsEl = document.getElementById("posts");
-const nameInput = document.getElementById("nameInput");
-const messageInput = document.getElementById("messageInput");
-const imageInput = document.getElementById("imageInput");
-const postBtn = document.getElementById("postBtn");
 const menuBtn = document.getElementById("menuBtn");
 const sidebar = document.getElementById("sidebar");
 const adminBtn = document.getElementById("adminBtn");
 const adminModal = document.getElementById("adminModal");
-const closeAdminModal = document.getElementById("closeAdminModal");
-const adminUser = document.getElementById("adminUser");
-const adminPass = document.getElementById("adminPass");
 const adminLoginBtn = document.getElementById("adminLoginBtn");
+const closeAdminModal = document.getElementById("closeAdminModal");
 const reportBugBtn = document.getElementById("reportBugBtn");
 const submitBugBtn = document.getElementById("submitBugBtn");
 const seeBugsBtn = document.getElementById("seeBugsBtn");
 const bugsModal = document.getElementById("bugsModal");
-const bugsList = document.getElementById("bugsList");
 const closeBugsModal = document.getElementById("closeBugsModal");
 const infoBtn = document.getElementById("infoBtn");
 const infoModal = document.getElementById("infoModal");
 const closeInfoModal = document.getElementById("closeInfoModal");
-const userNumberEl = document.getElementById("userNumber");
+const nameInput = document.getElementById("nameInput");
+const messageInput = document.getElementById("messageInput");
+const imageInput = document.getElementById("imageInput");
+const postBtn = document.getElementById("postBtn");
+const postsDiv = document.getElementById("posts");
 const toast = document.getElementById("toast");
-const versionLabel = document.getElementById("versionLabel");
-const updateCheck = document.getElementById("updateCheck");
-const logoutBtn = document.getElementById("logoutBtn");
 const onlineCountEl = document.getElementById("onlineCount");
-
-let adminLoggedIn = false;
+const userNumberEl = document.getElementById("userNumber");
 
 // ======================
-// Utilities
+// State
 // ======================
-function showToast(msg){
-  toast.innerText = msg;
+let isAdmin = false;
+let currentUserNumber = Math.floor(Math.random() * 10000);
+userNumberEl.textContent = currentUserNumber;
+
+// ======================
+// Helper Functions
+// ======================
+function showToast(msg) {
+  toast.textContent = msg;
   toast.classList.add("show");
-  setTimeout(()=>toast.classList.remove("show"),2000);
+  setTimeout(() => toast.classList.remove("show"), 2000);
 }
 
-// Generate persistent device #
-let deviceNumber = localStorage.getItem("deviceNumber");
-if(!deviceNumber){
-  deviceNumber = Math.floor(Math.random()*9000)+1000;
-  localStorage.setItem("deviceNumber",deviceNumber);
-}
-userNumberEl.innerText = deviceNumber;
-
-// ======================
-// Sidebar toggle
-// ======================
-menuBtn.addEventListener("click", ()=>{
+function toggleSidebar() {
   sidebar.classList.toggle("open");
+}
+
+// ======================
+// Sidebar
+// ======================
+menuBtn.addEventListener("click", toggleSidebar);
+
+// ======================
+// Admin Login
+// ======================
+adminBtn.addEventListener("click", () => {
+  adminModal.classList.remove("hidden");
 });
 
-// ======================
-// Admin login
-// ======================
-adminBtn.addEventListener("click", ()=>adminModal.classList.remove("hidden"));
-closeAdminModal.addEventListener("click", ()=>adminModal.classList.add("hidden"));
+closeAdminModal.addEventListener("click", () => {
+  adminModal.classList.add("hidden");
+});
 
-adminLoginBtn.addEventListener("click", ()=>{
-  if(adminUser.value.toLowerCase()==="melting" && adminPass.value==="melting"){
-    adminLoggedIn = true;
+adminLoginBtn.addEventListener("click", () => {
+  const user = document.getElementById("adminUser").value.trim();
+  const pass = document.getElementById("adminPass").value.trim();
+  if(user === "melting" && pass === "melting") {
+    isAdmin = true;
     showToast("Admin logged in");
-    seeBugsBtn.style.display="block";
-    logoutBtn.style.display="block";
     adminModal.classList.add("hidden");
-  }else{
+    seeBugsBtn.style.display = "block";
+    document.getElementById("logoutBtn").style.display = "block";
+  } else {
     showToast("Incorrect credentials");
   }
 });
 
-logoutBtn.addEventListener("click", ()=>{
-  adminLoggedIn=false;
-  seeBugsBtn.style.display="none";
-  logoutBtn.style.display="none";
+// ======================
+// Logout Admin
+// ======================
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  isAdmin = false;
+  seeBugsBtn.style.display = "none";
+  document.getElementById("logoutBtn").style.display = "none";
   showToast("Admin logged out");
 });
 
 // ======================
-// Posting messages
+// Post a message
 // ======================
-postBtn.addEventListener("click", ()=>{
-  const name = nameInput.value.trim() || "Anonymous";
-  const msg = messageInput.value.trim();
-  const img = imageInput.value.trim();
-  if(!msg) return;
-  const postData = {
-    name: name,
-    message: msg,
-    img: img || "",
-    owner: adminLoggedIn && name.toLowerCase()==="melting",
-    timestamp: Date.now(),
-    device: deviceNumber
+postBtn.addEventListener("click", () => {
+  const name = nameInput.value.trim();
+  const message = messageInput.value.trim();
+  const image = imageInput.value.trim();
+  if(!name || !message) return showToast("Name and message required");
+
+  const newPost = {
+    name: isAdmin ? "OWNER" : name,
+    message,
+    image: image || "",
+    owner: isAdmin,
+    timestamp: Date.now()
   };
-  db.ref("posts").push(postData);
-  messageInput.value="";
-  imageInput.value="";
+
+  db.ref("posts").push(newPost);
+  messageInput.value = "";
+  imageInput.value = "";
 });
 
 // ======================
 // Display posts
 // ======================
-db.ref("posts").on("value", snapshot=>{
-  postsEl.innerHTML="";
-  snapshot.forEach(snap=>{
-    const data = snap.val();
-    const div = document.createElement("div");
-    div.className="post glass";
-    div.innerHTML=`<span class="owner">${data.owner?data.name+" (OWNER)":data.name}</span>: ${data.message}`;
-    if(data.img) div.innerHTML+=`<br><img src="${data.img}">`;
-    postsEl.appendChild(div);
+db.ref("posts").on("value", snapshot => {
+  postsDiv.innerHTML = "";
+  const posts = snapshot.val();
+  if(!posts) return;
+  Object.keys(posts).forEach(key => {
+    const p = posts[key];
+    const postEl = document.createElement("div");
+    postEl.classList.add("post");
+
+    let html = `<span class="owner">${p.owner ? "OWNER" : p.name}</span>: ${p.message}`;
+    if(p.image) html += `<img src="${p.image}">`;
+
+    html += `<div class="post-meta">${new Date(p.timestamp).toLocaleTimeString()}</div>`;
+
+    if(isAdmin) {
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "⋮";
+      deleteBtn.style.position = "absolute";
+      deleteBtn.style.right = "6px";
+      deleteBtn.style.top = "6px";
+      deleteBtn.addEventListener("click", () => db.ref("posts/" + key).remove());
+      postEl.appendChild(deleteBtn);
+    }
+
+    postEl.innerHTML = html + (postEl.innerHTML);
+    postsDiv.appendChild(postEl);
   });
 });
 
 // ======================
-// Bug reports
+// Report Bug
 // ======================
-reportBugBtn.addEventListener("click", ()=>{
-  submitBugBtn.style.display="block";
-  messageInput.value="";
-  nameInput.value="";
-  sidebar.classList.remove("open");
-  showToast("Enter bug in composer then press Submit Bug");
+reportBugBtn.addEventListener("click", () => {
+  submitBugBtn.style.display = "block";
+  postBtn.style.display = "none";
+  postsDiv.style.display = "none";
 });
 
-submitBugBtn.addEventListener("click", ()=>{
-  const bugMsg = messageInput.value.trim();
-  if(!bugMsg) return;
-  db.ref("bugs").push({message:bugMsg,timestamp:Date.now()});
-  messageInput.value="";
-  submitBugBtn.style.display="none";
-  showToast("Bug submitted");
+submitBugBtn.addEventListener("click", () => {
+  const name = nameInput.value.trim();
+  const message = messageInput.value.trim();
+  if(!name || !message) return showToast("Name and message required");
+
+  db.ref("bugs").push({ name, message, timestamp: Date.now() });
+  showToast("Bug reported");
+  submitBugBtn.style.display = "none";
+  postBtn.style.display = "block";
+  postsDiv.style.display = "block";
+  nameInput.value = "";
+  messageInput.value = "";
 });
 
-// See bug reports
-seeBugsBtn.addEventListener("click", ()=>{
+// See bugs (Admin)
+seeBugsBtn.addEventListener("click", () => {
   bugsModal.classList.remove("hidden");
-  db.ref("bugs").once("value", snapshot=>{
-    bugsList.innerHTML="";
-    snapshot.forEach(snap=>{
-      const data = snap.val();
-      const div = document.createElement("div");
-      div.className="glass";
-      div.style.margin="4px 0";
-      div.textContent=data.message;
-      bugsList.appendChild(div);
+  postsDiv.style.display = "none";
+  db.ref("bugs").once("value").then(snapshot => {
+    const bugsList = document.getElementById("bugsList");
+    bugsList.innerHTML = "";
+    const bugs = snapshot.val();
+    if(!bugs) return;
+    Object.values(bugs).forEach(b => {
+      const el = document.createElement("div");
+      el.classList.add("post");
+      el.innerHTML = `<span class="owner">${b.name}</span>: ${b.message}`;
+      bugsList.appendChild(el);
     });
   });
 });
 
-closeBugsModal.addEventListener("click", ()=>bugsModal.classList.add("hidden"));
-
-// ======================
-// Info modal
-// ======================
-infoBtn.addEventListener("click", ()=>infoModal.classList.remove("hidden"));
-closeInfoModal.addEventListener("click", ()=>infoModal.classList.add("hidden"));
-
-// ======================
-// Online counter
-// ======================
-let onlineUsers = 1; // simplified demo
-onlineCountEl.innerText="Online: "+onlineUsers;
-
-// ======================
-// Update checker
-// ======================
-fetch("https://raw.githubusercontent.com/Meltingfaceemoji/Forumate/main/index.html")
-.then(r=>r.text())
-.then(t=>{
-  if(t.includes("7.4")) updateCheck.innerText="Up-to-date";
-  else updateCheck.innerText="Update available";
+closeBugsModal.addEventListener("click", () => {
+  bugsModal.classList.add("hidden");
+  postsDiv.style.display = "block";
 });
+
+// Info modal
+infoBtn.addEventListener("click", () => infoModal.classList.remove("hidden"));
+closeInfoModal.addEventListener("click", () => infoModal.classList.add("hidden"));
+
+// ======================
+// Online Counter (simple random for demo)
+// ======================
+setInterval(() => {
+  onlineCountEl.textContent = "Online: " + (Math.floor(Math.random() * 10) + 1);
+}, 3000);
