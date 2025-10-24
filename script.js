@@ -24,7 +24,6 @@ const imageInput = document.getElementById("imageInput");
 const postBtn = document.getElementById("postBtn");
 const menuBtn = document.getElementById("menuBtn");
 const sidebar = document.getElementById("sidebar");
-const closeSidebar = document.getElementById("closeSidebar");
 const adminBtn = document.getElementById("adminBtn");
 const adminModal = document.getElementById("adminModal");
 const closeAdminModal = document.getElementById("closeAdminModal");
@@ -45,6 +44,7 @@ const toast = document.getElementById("toast");
 const versionLabel = document.getElementById("versionLabel");
 const updateCheck = document.getElementById("updateCheck");
 const logoutBtn = document.getElementById("logoutBtn");
+const onlineCountEl = document.getElementById("onlineCount");
 
 let adminLoggedIn = false;
 
@@ -57,7 +57,7 @@ function showToast(msg){
   setTimeout(()=>toast.classList.remove("show"),2000);
 }
 
-// Generate or retrieve device #number
+// Generate persistent device #
 let deviceNumber = localStorage.getItem("deviceNumber");
 if(!deviceNumber){
   deviceNumber = Math.floor(Math.random()*9000)+1000;
@@ -66,40 +66,41 @@ if(!deviceNumber){
 userNumberEl.innerText = deviceNumber;
 
 // ======================
-// Sidebar
+// Sidebar toggle
 // ======================
-menuBtn.addEventListener("click",()=>sidebar.classList.add("open"));
-closeSidebar.addEventListener("click",()=>sidebar.classList.remove("open"));
+menuBtn.addEventListener("click", ()=>{
+  sidebar.classList.toggle("open");
+});
 
 // ======================
-// Admin Login
+// Admin login
 // ======================
-adminBtn.addEventListener("click",()=>adminModal.classList.remove("hidden"));
-closeAdminModal.addEventListener("click",()=>adminModal.classList.add("hidden"));
+adminBtn.addEventListener("click", ()=>adminModal.classList.remove("hidden"));
+closeAdminModal.addEventListener("click", ()=>adminModal.classList.add("hidden"));
 
-adminLoginBtn.addEventListener("click",()=>{
-  if(adminUser.value.toLowerCase() === "melting" && adminPass.value === "melting"){
+adminLoginBtn.addEventListener("click", ()=>{
+  if(adminUser.value.toLowerCase()==="melting" && adminPass.value==="melting"){
     adminLoggedIn = true;
-    showToast("Admin Logged In");
-    seeBugsBtn.style.display = "block";
-    logoutBtn.style.display = "block";
+    showToast("Admin logged in");
+    seeBugsBtn.style.display="block";
+    logoutBtn.style.display="block";
     adminModal.classList.add("hidden");
   }else{
     showToast("Incorrect credentials");
   }
 });
 
-logoutBtn.addEventListener("click",()=>{
-  adminLoggedIn = false;
-  seeBugsBtn.style.display = "none";
-  logoutBtn.style.display = "none";
-  showToast("Admin Logged Out");
+logoutBtn.addEventListener("click", ()=>{
+  adminLoggedIn=false;
+  seeBugsBtn.style.display="none";
+  logoutBtn.style.display="none";
+  showToast("Admin logged out");
 });
 
 // ======================
-// Post messages
+// Posting messages
 // ======================
-postBtn.addEventListener("click",()=>{
+postBtn.addEventListener("click", ()=>{
   const name = nameInput.value.trim() || "Anonymous";
   const msg = messageInput.value.trim();
   const img = imageInput.value.trim();
@@ -108,19 +109,19 @@ postBtn.addEventListener("click",()=>{
     name: name,
     message: msg,
     img: img || "",
-    owner: adminLoggedIn && name.toLowerCase()==="melting"?true:false,
+    owner: adminLoggedIn && name.toLowerCase()==="melting",
     timestamp: Date.now(),
     device: deviceNumber
   };
   db.ref("posts").push(postData);
-  messageInput.value = "";
-  imageInput.value = "";
+  messageInput.value="";
+  imageInput.value="";
 });
 
 // ======================
 // Display posts
 // ======================
-db.ref("posts").on("value",snapshot=>{
+db.ref("posts").on("value", snapshot=>{
   postsEl.innerHTML="";
   snapshot.forEach(snap=>{
     const data = snap.val();
@@ -133,9 +134,9 @@ db.ref("posts").on("value",snapshot=>{
 });
 
 // ======================
-// Bug Reports
+// Bug reports
 // ======================
-reportBugBtn.addEventListener("click",()=>{
+reportBugBtn.addEventListener("click", ()=>{
   submitBugBtn.style.display="block";
   messageInput.value="";
   nameInput.value="";
@@ -143,7 +144,7 @@ reportBugBtn.addEventListener("click",()=>{
   showToast("Enter bug in composer then press Submit Bug");
 });
 
-submitBugBtn.addEventListener("click",()=>{
+submitBugBtn.addEventListener("click", ()=>{
   const bugMsg = messageInput.value.trim();
   if(!bugMsg) return;
   db.ref("bugs").push({message:bugMsg,timestamp:Date.now()});
@@ -153,9 +154,9 @@ submitBugBtn.addEventListener("click",()=>{
 });
 
 // See bug reports
-seeBugsBtn.addEventListener("click",()=>{
+seeBugsBtn.addEventListener("click", ()=>{
   bugsModal.classList.remove("hidden");
-  db.ref("bugs").once("value",snapshot=>{
+  db.ref("bugs").once("value", snapshot=>{
     bugsList.innerHTML="";
     snapshot.forEach(snap=>{
       const data = snap.val();
@@ -167,22 +168,23 @@ seeBugsBtn.addEventListener("click",()=>{
     });
   });
 });
-closeBugsModal.addEventListener("click",()=>bugsModal.classList.add("hidden"));
+
+closeBugsModal.addEventListener("click", ()=>bugsModal.classList.add("hidden"));
 
 // ======================
-// Info Modal
+// Info modal
 // ======================
-infoBtn.addEventListener("click",()=>infoModal.classList.remove("hidden"));
-closeInfoModal.addEventListener("click",()=>infoModal.classList.add("hidden"));
+infoBtn.addEventListener("click", ()=>infoModal.classList.remove("hidden"));
+closeInfoModal.addEventListener("click", ()=>infoModal.classList.add("hidden"));
 
 // ======================
-// Online Counter
+// Online counter
 // ======================
 let onlineUsers = 1; // simplified demo
-document.getElementById("onlineCount").innerText="Online: "+onlineUsers;
+onlineCountEl.innerText="Online: "+onlineUsers;
 
 // ======================
-// Update Checker (simplified)
+// Update checker
 // ======================
 fetch("https://raw.githubusercontent.com/Meltingfaceemoji/Forumate/main/index.html")
 .then(r=>r.text())
