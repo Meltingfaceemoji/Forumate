@@ -13,14 +13,16 @@ body, html { width:100%; height:100%; overflow-x:hidden; background:#e0f0ff; }
   background-size: cover;
 }
 
-/* Glass Effect - Light */
+/* ======================
+   Glass Effect - Light Theme
+====================== */
 .glass {
   background: rgba(255,255,255,0.6);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(100,150,255,0.3);
   border-radius: 16px;
   padding: 12px;
-  color: #000;
+  color: #004080;
   transition: all 0.3s ease;
 }
 
@@ -97,7 +99,6 @@ body, html { width:100%; height:100%; overflow-x:hidden; background:#e0f0ff; }
   border:1px solid rgba(100,150,255,0.2);
   position:relative;
   transition:all 0.3s ease;
-  color:#004080;
 }
 .post img { max-width:100%; border-radius:12px; margin-top:0.5rem; }
 .post .owner { color:red; font-weight:700; }
@@ -121,7 +122,7 @@ body, html { width:100%; height:100%; overflow-x:hidden; background:#e0f0ff; }
 ====================== */
 .modal { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center; backdrop-filter:blur(3px); z-index:200; transition:opacity 0.3s; }
 .modal.hidden { display:none; }
-.modal-card { position:relative; max-width:400px; width:90%; border-radius:16px; }
+.modal-card { position:relative; max-width:400px; width:90%; border-radius:16px; background:rgba(255,255,255,0.6); padding:1rem; backdrop-filter:blur(12px); border:1px solid rgba(100,150,255,0.3); }
 .modal-card.wide { max-width:700px; }
 .modal-input { width:100%; margin:0.3rem 0; padding:0.5rem; border-radius:12px; border:1px solid rgba(100,150,255,0.3); background:rgba(255,255,255,0.6); color:#004080; }
 .modal-actions { display:flex; justify-content:flex-end; gap:0.3rem; }
