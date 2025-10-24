@@ -1,68 +1,50 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Forumate — v7.6 Simplicity+</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forumate</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- background: PICTURE.jpg (if present) with CSS fallback shapes underneath -->
-  <div class="background-css" aria-hidden="true"></div>
+  <!-- Background -->
+  <div class="background"></div>
 
-  <!-- top circles (centered) -->
-  <div class="top-circles" aria-hidden="true">
-    <div id="hamburger" class="circle" title="Menu">☰</div>
-    <div id="adminCircle" class="circle" title="Admin">A</div>
+  <!-- Top circular buttons -->
+  <div class="top-buttons">
+    <div class="circle" id="usernameDisplay">Anonymous</div>
+    <div class="circle" id="hamburgerBtn">☰</div>
+    <div class="circle" id="adminBtn">A</div>
   </div>
 
-  <!-- Sidebar (closed by default) -->
-  <aside id="sidebar" class="sidebar closed" role="navigation" aria-label="Sidebar">
-    <div id="nameTop" class="sidebar-name">Guest</div>
+  <!-- Sidebar -->
+  <div class="sidebar"></div>
 
-    <div class="sidebar-buttons">
-      <button id="btnReportBug" class="btn sidebar-btn">Report Bug</button>
-      <button id="btnInfo" class="btn sidebar-btn">Info</button>
-      <button id="btnMsgReports" class="btn sidebar-btn hidden">See Message Reports</button>
-    </div>
+  <!-- Chat container -->
+  <div class="chat-container"></div>
 
-    <div id="adminTools" class="admin-tools hidden">
-      <button id="btnViewBugs" class="btn sidebar-btn">View Bug Reports</button>
-      <button id="btnViewOnline" class="btn sidebar-btn">Concurrent Online</button>
-      <button id="btnReset" class="btn sidebar-btn">Reset Chat</button>
-    </div>
+  <!-- Composer -->
+  <div class="composer">
+    <input type="text" placeholder="Type your message...">
+    <button>Post</button>
+  </div>
 
-    <div class="sidebar-bottom">
-      <button id="btnAdminLogin" class="btn sidebar-btn">Admin Login</button>
-      <div id="version" class="version">v7.6 — Simplicity+</div>
-      <div id="lastUpdated" class="small muted">Last updated: <!-- filled by JS --></div>
-    </div>
-  </aside>
-
-  <!-- main posts area -->
-  <main id="main" class="main">
-    <div id="posts" class="posts" aria-live="polite"></div>
-  </main>
-
-  <!-- composer -->
-  <div class="composer glass">
-    <div class="composer-row">
-      <input id="inputName" placeholder="Name (keeps device #)" />
-      <input id="inputImage" type="file" accept="image/*" />
-    </div>
-    <textarea id="inputMessage" placeholder="Write a message..." rows="3"></textarea>
-    <div class="composer-actions">
-      <button id="btnPost" class="btn primary">Post</button>
-      <div id="status" class="muted small"></div>
+  <!-- Admin login popup -->
+  <div class="admin-login-popup" id="adminLoginPopup">
+    <div class="login-content">
+      <span id="adminClose">✖</span>
+      <h3>Admin Login</h3>
+      <input type="text" id="loginUser" placeholder="Username">
+      <input type="password" id="loginPass" placeholder="Password">
+      <button id="loginSubmit">Login</button>
     </div>
   </div>
 
-  <!-- Modal overlay area (used by JS to inject modal content) -->
-  <div id="modalOverlay" class="modal-overlay hidden" role="dialog" aria-hidden="true"></div>
+  <!-- Version display -->
+  <div class="version">v7.4 Codename Simplicity</div>
 
-  <!-- Toast -->
-  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
-
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
