@@ -1,124 +1,291 @@
-/* ========== Basic reset & fonts ========== */
-* { box-sizing: border-box; }
-:root{
-  --accent:#4da6ff;
-  --accent-dark:#0e6fe6;
-  --glass-bg: rgba(255,255,255,0.22);
-  --glass-btn: rgba(255,255,255,0.18);
-  --muted: rgba(0,0,0,0.45);
-  --radius: 12px;
+/* ---------------- Global ---------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
 }
-html,body{ height:100%; margin:0; font-family:Inter,Segoe UI,Arial,sans-serif; color:#003a66; }
 
-/* ========== Background: PICTURE.jpg fallback to CSS curves ========== */
-.background-css{
-  position:fixed; inset:0; z-index:-2;
-  /* Try image first, if it exists it will show; otherwise gradient shows */
-  background-image:
-    url('PICTURE.jpg'),
-    linear-gradient(135deg,#e6f5ff 0%, #cfeeff 45%, #eaf6ff 100%);
-  background-size: cover, cover;
-  background-position: center center, center center;
-  overflow:hidden;
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
-.background-css::before, .background-css::after{
-  content:""; position:absolute; border-radius:50%;
-  background: rgba(77,166,255,0.08);
+
+/* ---------------- Background ---------------- */
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('PICTURE.jpg') no-repeat center center/cover;
+  z-index: -2;
 }
-.background-css::before{ width:740px; height:740px; top:-260px; left:-220px; filter: blur(40px); }
-.background-css::after{ width:520px; height:520px; right:-200px; bottom:-160px; filter: blur(30px); }
 
-/* ========== Top circles (centered) ========== */
-.top-circles{
-  position:fixed; left:50%; transform:translateX(-50%); top:12px;
-  display:flex; gap:14px; z-index:1200;
+/* ---------------- Top Circular Buttons ---------------- */
+.top-buttons {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 100;
 }
-.circle{
-  width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-  background: rgba(255,255,255,0.22); backdrop-filter: blur(10px);
-  color:var(--accent-dark); font-weight:700; cursor:pointer; box-shadow:0 6px 18px rgba(6,57,95,0.06);
-  transition: all .16s ease;
+
+.circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #0078FF;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.3s all;
 }
-.circle:hover{ transform:translateY(-2px); background: rgba(255,255,255,0.30); }
 
-/* ========== Sidebar ========== */
-.sidebar{
-  position:fixed; left:0; top:0; bottom:0; width:220px; padding:18px 12px;
-  background: rgba(225,242,255,0.20); backdrop-filter: blur(10px);
-  border-right: 1px solid rgba(77,166,255,0.12); z-index:1000; display:flex; flex-direction:column;
-  gap:10px; transform: translateX(-100%); transition: transform .28s cubic-bezier(.2,.9,.2,1);
+.circle:hover {
+  background: rgba(255,255,255,0.4);
 }
-.sidebar.open, .sidebar.opened{ transform: translateX(0); }
-.sidebar-name{ font-weight:800; color:var(--accent-dark); text-align:center; margin-bottom:6px; }
-.sidebar-buttons{ display:flex; flex-direction:column; gap:8px; }
 
-/* sidebar buttons look glassier and compact */
-.sidebar-btn{
-  width:100%; border:0; padding:9px 10px; border-radius:10px;
-  background: var(--glass-btn); color:var(--accent-dark); font-weight:700; cursor:pointer;
-  text-align:left;
+/* ---------------- Sidebar ---------------- */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px; /* hidden by default */
+  width: 250px;
+  height: 100%;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 10px;
+  z-index: 99;
+  transition: 0.3s left;
 }
-.sidebar-btn:hover{ background: rgba(255,255,255,0.34); transform: scale(1.01); }
 
-/* admin tools container */
-.admin-tools{ margin-top:8px; display:flex; flex-direction:column; gap:8px; }
-.sidebar-bottom{ margin-top:auto; text-align:center; font-size:13px; color:var(--muted); }
-
-/* ========== Main posts area ========== */
-.posts{ margin:80px 18px 120px 18px; display:flex; flex-direction:column; gap:12px; }
-
-/* single post */
-.post{
-  position:relative; padding:12px 14px; border-radius:12px;
-  background: var(--glass-bg); border: 1px solid rgba(77,166,255,0.08);
-  box-shadow: 0 6px 20px rgba(9,44,76,0.04); word-break: break-word;
+.sidebar.show {
+  left: 0;
 }
-.post .meta{ font-size:13px; color:var(--muted); margin-bottom:6px; display:flex; gap:8px; align-items:center; }
-.post .meta .owner{ font-weight:700; color:#b71c1c; }
-.post img.post-image{ max-width:100%; margin-top:8px; border-radius:8px; }
 
-/* three dots */
-.post .dots{ position:absolute; right:10px; top:8px; cursor:pointer; font-weight:700; color:var(--muted); padding:6px; border-radius:8px; }
-.post .dots:hover{ background: rgba(255,255,255,0.12); }
-
-/* mini-menu */
-.mini-menu{
-  position:absolute; top:36px; right:10px; display:flex; flex-direction:column; gap:6px;
-  background: rgba(255,255,255,0.22); backdrop-filter: blur(8px); border-radius:10px; padding:6px;
-  box-shadow: 0 8px 20px rgba(6,57,95,0.06); z-index:1300;
+.sidebar button {
+  background: rgba(255,255,255,0.3);
+  border: none;
+  padding: 10px;
+  border-radius: 12px;
+  color: #0078FF;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s all;
 }
-.mini-menu button{ border:0; background:transparent; padding:8px 10px; text-align:left; color:var(--accent-dark); font-weight:700; cursor:pointer; }
-.mini-menu button:hover{ background: rgba(255,255,255,0.18); }
 
-/* ========== Composer (bottom) ========== */
-.composer{
-  position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px;
-  width: min(980px, calc(100% - 40px)); padding:12px; border-radius:14px;
-  background: rgba(255,255,255,0.22); backdrop-filter: blur(10px);
-  box-shadow: 0 10px 30px rgba(6,57,95,0.06); z-index:1200; display:flex; flex-direction:column; gap:8px;
+.sidebar button:hover {
+  background: rgba(255,255,255,0.5);
 }
-.composer-row{ display:flex; gap:8px; align-items:center; }
-.composer input[type="text"], .composer input[type="file"], .composer textarea{
-  padding:10px; border-radius:10px; border:0; background: rgba(255,255,255,0.14); color:#003a66; width:100%;
+
+/* ---------------- Chat Container ---------------- */
+.chat-container {
+  position: absolute;
+  top: 90px;
+  left: 20px;
+  right: 20px;
+  bottom: 70px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1;
 }
-.composer textarea{ resize:vertical; min-height:64px; max-height:160px; }
-.composer .primary{ align-self:flex-end; padding:10px 14px; background:var(--accent); border-radius:10px; color:white; border:0; cursor:pointer; font-weight:700; }
-.composer .primary:hover{ background:var(--accent-dark); }
 
-/* ========== Modal overlay & helpers ========== */
-/* safer default: hidden & non-blocking unless JS shows it */
-.modal-overlay, #modalOverlay { display:none; align-items:center; justify-content:center; position:fixed; inset:0; background: rgba(0,0,0,0.22); z-index:1400; pointer-events:none; }
-.modal-overlay:not(.hidden), #modalOverlay:not(.hidden){ display:flex; pointer-events:auto; background: rgba(0,0,0,0.28); }
-.modal-overlay > .modal-card, #modalOverlay > .modal-card { max-width:92%; width:min(780px,96%); margin:12px; background: rgba(255,255,255,0.22); padding:20px; border-radius:14px; backdrop-filter: blur(10px); }
+.chat-message {
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(8px);
+  padding: 10px 15px;
+  border-radius: 15px;
+  max-width: 80%;
+  word-wrap: break-word;
+  position: relative;
+}
 
-/* ========== Toast ========== */
-.toast{ position:fixed; bottom:28px; left:50%; transform:translateX(-50%); padding:10px 16px; background: rgba(0,0,0,0.65); color:white; border-radius:12px; z-index:1600; }
-.toast.hidden{ display:none; }
+.message-menu {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
 
-/* ========== responsive tweaks ========== */
-@media (max-width:900px){
-  .top-circles{ left:50%; transform:translateX(-50%); top:8px; }
-  .sidebar{ width:200px; }
-  .posts{ margin:90px 12px 140px 12px; }
-  .composer{ width: calc(100% - 24px); left: 12px; transform:none; }
+.message-menu-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 20px;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(6px);
+  border-radius: 8px;
+  overflow: hidden;
+  flex-direction: column;
+  z-index: 50;
+}
+
+.message-menu:hover .message-menu-content {
+  display: flex;
+}
+
+.message-menu-content button {
+  border: none;
+  background: transparent;
+  padding: 5px 10px;
+  color: #0078FF;
+  text-align: left;
+  cursor: pointer;
+}
+
+.message-menu-content button:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* ---------------- Composer ---------------- */
+.composer {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 90;
+}
+
+.composer input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  backdrop-filter: blur(8px);
+  background: rgba(255,255,255,0.2);
+  color: #000;
+  font-size: 16px;
+}
+
+.composer input::placeholder {
+  color: rgba(0,0,0,0.5);
+}
+
+.composer button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.3);
+  color: #0078FF;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s all;
+}
+
+.composer button:hover {
+  background: rgba(255,255,255,0.5);
+}
+
+/* ---------------- Admin Login Popup ---------------- */
+.admin-login-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.3);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.admin-login-popup.show {
+  display: flex;
+}
+
+.login-content {
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 250px;
+}
+
+.login-content input {
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+}
+
+.login-content button {
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.3);
+  color: #0078FF;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#adminClose {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* ---------------- Version ---------------- */
+.version {
+  position: fixed;
+  bottom: 10px;
+  right: 20px;
+  color: #0078FF;
+  font-weight: bold;
+  z-index: 100;
+}
+
+/* ---------------- Responsive / Mobile ---------------- */
+@media (max-width: 600px) {
+  .top-buttons {
+    flex-direction: row;
+    gap: 5px;
+  }
+
+  .circle {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .composer {
+    flex-direction: column;
+  }
+
+  .composer input, .composer button {
+    width: 100%;
+  }
+
+  .chat-container {
+    top: 80px;
+    left: 10px;
+    right: 10px;
+    bottom: 90px;
+  }
+
+  .sidebar {
+    width: 200px;
+  }
 }
