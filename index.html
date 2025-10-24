@@ -10,11 +10,14 @@
 </head>
 <body>
 
+<!-- Wallpaper -->
+<div class="background"></div>
+
 <!-- Top Bar -->
 <div class="topbar glass">
   <button id="adminBtn">A</button>
   <div class="title">Forumate</div>
-  <span class="versionLabel"></span>
+  <span class="versionLabel">v7.6</span>
   <button id="infoBtn">ℹ️</button>
 </div>
 
@@ -25,7 +28,7 @@
   <button id="reportBugBtn">Report Bug</button>
 </div>
 
-<!-- Posts -->
+<!-- Posts container -->
 <div id="posts" class="posts"></div>
 
 <!-- Composer -->
@@ -33,27 +36,25 @@
   <input type="text" id="nameInput" placeholder="Name">
   <textarea id="messageInput" placeholder="Message"></textarea>
   <input type="text" id="imageInput" placeholder="Image URL (optional)">
-  <div class="composer-row">
-    <button id="postBtn" class="btn primary">Post</button>
-  </div>
+  <button id="postBtn" class="btn primary">Post</button>
 </div>
 
-<!-- Admin Modal -->
+<!-- Admin Login Modal -->
 <div id="adminModal" class="modal hidden">
-  <div class="modal-card">
+  <div class="modal-card glass">
     <h3>Admin Login</h3>
     <input type="text" id="adminUser" placeholder="Username">
     <input type="password" id="adminPass" placeholder="Password">
     <div class="modal-actions">
       <button id="adminLoginBtn" class="btn primary">Login</button>
-      <button id="closeAdminModal" class="btn secondary">X</button>
+      <button id="closeAdminModal" class="btn secondary">Close</button>
     </div>
   </div>
 </div>
 
 <!-- Info Modal -->
 <div id="infoModal" class="modal hidden">
-  <div class="modal-card">
+  <div class="modal-card glass">
     <h3>Info</h3>
     <p>©MeltingDev</p>
     <p>Your ID: <span id="userNumber"></span></p>
@@ -62,9 +63,9 @@
   </div>
 </div>
 
-<!-- Bugs Modal -->
+<!-- Bug Modal -->
 <div id="bugsModal" class="modal hidden">
-  <div class="modal-card wide">
+  <div class="modal-card wide glass">
     <h3>Bug Reports</h3>
     <div id="bugsList" class="posts"></div>
     <button id="closeBugsModal" class="btn secondary">Close</button>
