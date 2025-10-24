@@ -1,78 +1,68 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forumate</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Forumate — v7.6 Simplicity+</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- background: PICTURE.jpg (if present) with CSS fallback shapes underneath -->
+  <div class="background-css" aria-hidden="true"></div>
 
-<!-- Background -->
-<div class="background"></div>
+  <!-- top circles (centered) -->
+  <div class="top-circles" aria-hidden="true">
+    <div id="hamburger" class="circle" title="Menu">☰</div>
+    <div id="adminCircle" class="circle" title="Admin">A</div>
+  </div>
 
-<!-- Hamburger -->
-<div id="menuBtn" class="hamburger">☰</div>
+  <!-- Sidebar (closed by default) -->
+  <aside id="sidebar" class="sidebar closed" role="navigation" aria-label="Sidebar">
+    <div id="nameTop" class="sidebar-name">Guest</div>
 
-<!-- Sidebar -->
-<div id="sidebar" class="sidebar glass">
-    <!-- Buttons added dynamically based on user/admin mode -->
-</div>
-
-<!-- Posts -->
-<div id="posts" class="posts"></div>
-
-<!-- Composer -->
-<div class="composer glass">
-    <input type="text" id="nameInput" placeholder="Name">
-    <textarea id="messageInput" placeholder="Message"></textarea>
-    <input type="text" id="imageInput" placeholder="Image URL (optional)">
-    <button id="postBtn" class="btn glass">Post</button>
-</div>
-
-<!-- Admin Login Modal -->
-<div id="adminModal" class="modal hidden">
-    <div class="modal-card glass">
-        <h3>Admin Login</h3>
-        <input type="text" id="adminUser" placeholder="Username">
-        <input type="password" id="adminPass" placeholder="Password">
-        <button id="adminLoginBtn" class="btn glass">Login</button>
-        <button id="closeAdminModal" class="btn glass">Close</button>
+    <div class="sidebar-buttons">
+      <button id="btnReportBug" class="btn sidebar-btn">Report Bug</button>
+      <button id="btnInfo" class="btn sidebar-btn">Info</button>
+      <button id="btnMsgReports" class="btn sidebar-btn hidden">See Message Reports</button>
     </div>
-</div>
 
-<!-- Info Modal -->
-<div id="infoModal" class="modal hidden">
-    <div class="modal-card glass">
-        <h3>User Info</h3>
-        <p>Your ID: <span id="userNumber"></span></p>
-        <button id="closeInfoModal" class="btn glass">Close</button>
+    <div id="adminTools" class="admin-tools hidden">
+      <button id="btnViewBugs" class="btn sidebar-btn">View Bug Reports</button>
+      <button id="btnViewOnline" class="btn sidebar-btn">Concurrent Online</button>
+      <button id="btnReset" class="btn sidebar-btn">Reset Chat</button>
     </div>
-</div>
 
-<!-- Bugs Modal -->
-<div id="bugsModal" class="modal hidden">
-    <div class="modal-card glass wide">
-        <h3>Bug Reports</h3>
-        <div id="bugsList" class="bugsList"></div>
-        <button id="closeBugsModal" class="btn glass">Close</button>
+    <div class="sidebar-bottom">
+      <button id="btnAdminLogin" class="btn sidebar-btn">Admin Login</button>
+      <div id="version" class="version">v7.6 — Simplicity+</div>
+      <div id="lastUpdated" class="small muted">Last updated: <!-- filled by JS --></div>
     </div>
-</div>
+  </aside>
 
-<!-- Message Reports Modal (Admin only) -->
-<div id="messageReportsModal" class="modal hidden">
-    <div class="modal-card glass wide">
-        <h3>Message Reports</h3>
-        <div id="messageReportsList" class="bugsList"></div>
-        <button id="closeMessageReportsModal" class="btn glass">Close</button>
+  <!-- main posts area -->
+  <main id="main" class="main">
+    <div id="posts" class="posts" aria-live="polite"></div>
+  </main>
+
+  <!-- composer -->
+  <div class="composer glass">
+    <div class="composer-row">
+      <input id="inputName" placeholder="Name (keeps device #)" />
+      <input id="inputImage" type="file" accept="image/*" />
     </div>
-</div>
+    <textarea id="inputMessage" placeholder="Write a message..." rows="3"></textarea>
+    <div class="composer-actions">
+      <button id="btnPost" class="btn primary">Post</button>
+      <div id="status" class="muted small"></div>
+    </div>
+  </div>
 
-<!-- Toast Notification -->
-<div id="toast" class="toast"></div>
+  <!-- Modal overlay area (used by JS to inject modal content) -->
+  <div id="modalOverlay" class="modal-overlay hidden" role="dialog" aria-hidden="true"></div>
 
-<script src="script.js"></script>
+  <!-- Toast -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
 </body>
 </html>
