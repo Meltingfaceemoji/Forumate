@@ -1,196 +1,124 @@
-/* ---------------- Body & Background ---------------- */
-body, html {
-  margin: 0;
-  padding: 0;
-  font-family: "Segoe UI", sans-serif;
-  height: 100%;
-  overflow-x: hidden;
-  background: url('PICTURE.jpg') no-repeat center center fixed;
-  background-size: cover;
+/* ========== Basic reset & fonts ========== */
+* { box-sizing: border-box; }
+:root{
+  --accent:#4da6ff;
+  --accent-dark:#0e6fe6;
+  --glass-bg: rgba(255,255,255,0.22);
+  --glass-btn: rgba(255,255,255,0.18);
+  --muted: rgba(0,0,0,0.45);
+  --radius: 12px;
 }
+html,body{ height:100%; margin:0; font-family:Inter,Segoe UI,Arial,sans-serif; color:#003a66; }
 
-/* ---------------- Top Buttons ---------------- */
-.top-buttons-container {
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  display: flex;
-  gap: 16px;
-  z-index: 1400;
+/* ========== Background: PICTURE.jpg fallback to CSS curves ========== */
+.background-css{
+  position:fixed; inset:0; z-index:-2;
+  /* Try image first, if it exists it will show; otherwise gradient shows */
+  background-image:
+    url('PICTURE.jpg'),
+    linear-gradient(135deg,#e6f5ff 0%, #cfeeff 45%, #eaf6ff 100%);
+  background-size: cover, cover;
+  background-position: center center, center center;
+  overflow:hidden;
 }
-
-.top-button {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(225,242,255,0.30);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #0078FF;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  transition: 0.25s ease;
+.background-css::before, .background-css::after{
+  content:""; position:absolute; border-radius:50%;
+  background: rgba(77,166,255,0.08);
 }
+.background-css::before{ width:740px; height:740px; top:-260px; left:-220px; filter: blur(40px); }
+.background-css::after{ width:520px; height:520px; right:-200px; bottom:-160px; filter: blur(30px); }
 
-.top-button:hover {
-  background: rgba(225,242,255,0.45);
+/* ========== Top circles (centered) ========== */
+.top-circles{
+  position:fixed; left:50%; transform:translateX(-50%); top:12px;
+  display:flex; gap:14px; z-index:1200;
 }
-
-/* ---------------- Sidebar ---------------- */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 220px;
-  height: 100%;
-  background: rgba(225,242,255,0.20);
-  backdrop-filter: blur(10px);
-  border-right: 1px solid rgba(77,166,255,0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 18px 12px;
-  padding-bottom: 160px;
-  transform: translateX(-100%);
-  transition: transform 0.28s cubic-bezier(.2,.9,.2,1);
-  z-index: 1300;
+.circle{
+  width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background: rgba(255,255,255,0.22); backdrop-filter: blur(10px);
+  color:var(--accent-dark); font-weight:700; cursor:pointer; box-shadow:0 6px 18px rgba(6,57,95,0.06);
+  transition: all .16s ease;
 }
+.circle:hover{ transform:translateY(-2px); background: rgba(255,255,255,0.30); }
 
-.sidebar.show {
-  transform: translateX(0);
+/* ========== Sidebar ========== */
+.sidebar{
+  position:fixed; left:0; top:0; bottom:0; width:220px; padding:18px 12px;
+  background: rgba(225,242,255,0.20); backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(77,166,255,0.12); z-index:1000; display:flex; flex-direction:column;
+  gap:10px; transform: translateX(-100%); transition: transform .28s cubic-bezier(.2,.9,.2,1);
 }
+.sidebar.open, .sidebar.opened{ transform: translateX(0); }
+.sidebar-name{ font-weight:800; color:var(--accent-dark); text-align:center; margin-bottom:6px; }
+.sidebar-buttons{ display:flex; flex-direction:column; gap:8px; }
 
-/* Sidebar buttons */
-.sidebar button {
-  background: rgba(225,242,255,0.25);
-  border: none;
-  border-radius: 10px;
-  padding: 10px;
-  color: #0078FF;
-  font-weight: bold;
-  cursor: pointer;
-  text-align: left;
+/* sidebar buttons look glassier and compact */
+.sidebar-btn{
+  width:100%; border:0; padding:9px 10px; border-radius:10px;
+  background: var(--glass-btn); color:var(--accent-dark); font-weight:700; cursor:pointer;
+  text-align:left;
 }
+.sidebar-btn:hover{ background: rgba(255,255,255,0.34); transform: scale(1.01); }
 
-.sidebar button:hover {
-  background: rgba(225,242,255,0.40);
+/* admin tools container */
+.admin-tools{ margin-top:8px; display:flex; flex-direction:column; gap:8px; }
+.sidebar-bottom{ margin-top:auto; text-align:center; font-size:13px; color:var(--muted); }
+
+/* ========== Main posts area ========== */
+.posts{ margin:80px 18px 120px 18px; display:flex; flex-direction:column; gap:12px; }
+
+/* single post */
+.post{
+  position:relative; padding:12px 14px; border-radius:12px;
+  background: var(--glass-bg); border: 1px solid rgba(77,166,255,0.08);
+  box-shadow: 0 6px 20px rgba(9,44,76,0.04); word-break: break-word;
 }
+.post .meta{ font-size:13px; color:var(--muted); margin-bottom:6px; display:flex; gap:8px; align-items:center; }
+.post .meta .owner{ font-weight:700; color:#b71c1c; }
+.post img.post-image{ max-width:100%; margin-top:8px; border-radius:8px; }
 
-/* ---------------- Chat Area ---------------- */
-.chat-container {
-  margin-left: 20px;
-  padding: 80px 20px 100px 20px; /* space for top buttons and composer */
+/* three dots */
+.post .dots{ position:absolute; right:10px; top:8px; cursor:pointer; font-weight:700; color:var(--muted); padding:6px; border-radius:8px; }
+.post .dots:hover{ background: rgba(255,255,255,0.12); }
+
+/* mini-menu */
+.mini-menu{
+  position:absolute; top:36px; right:10px; display:flex; flex-direction:column; gap:6px;
+  background: rgba(255,255,255,0.22); backdrop-filter: blur(8px); border-radius:10px; padding:6px;
+  box-shadow: 0 8px 20px rgba(6,57,95,0.06); z-index:1300;
 }
+.mini-menu button{ border:0; background:transparent; padding:8px 10px; text-align:left; color:var(--accent-dark); font-weight:700; cursor:pointer; }
+.mini-menu button:hover{ background: rgba(255,255,255,0.18); }
 
-/* Chat message styling */
-.chat-message {
-  margin-bottom: 12px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.20);
-  backdrop-filter: blur(6px);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #0078FF;
+/* ========== Composer (bottom) ========== */
+.composer{
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px;
+  width: min(980px, calc(100% - 40px)); padding:12px; border-radius:14px;
+  background: rgba(255,255,255,0.22); backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(6,57,95,0.06); z-index:1200; display:flex; flex-direction:column; gap:8px;
 }
-
-/* 3-dot message menu */
-.message-menu {
-  position: relative;
+.composer-row{ display:flex; gap:8px; align-items:center; }
+.composer input[type="text"], .composer input[type="file"], .composer textarea{
+  padding:10px; border-radius:10px; border:0; background: rgba(255,255,255,0.14); color:#003a66; width:100%;
 }
+.composer textarea{ resize:vertical; min-height:64px; max-height:160px; }
+.composer .primary{ align-self:flex-end; padding:10px 14px; background:var(--accent); border-radius:10px; color:white; border:0; cursor:pointer; font-weight:700; }
+.composer .primary:hover{ background:var(--accent-dark); }
 
-.message-menu-content {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 25px;
-  background: rgba(225,242,255,0.25);
-  backdrop-filter: blur(10px);
-  border-radius: 8px;
-  padding: 5px;
-  flex-direction: column;
-  z-index: 1500;
-}
+/* ========== Modal overlay & helpers ========== */
+/* safer default: hidden & non-blocking unless JS shows it */
+.modal-overlay, #modalOverlay { display:none; align-items:center; justify-content:center; position:fixed; inset:0; background: rgba(0,0,0,0.22); z-index:1400; pointer-events:none; }
+.modal-overlay:not(.hidden), #modalOverlay:not(.hidden){ display:flex; pointer-events:auto; background: rgba(0,0,0,0.28); }
+.modal-overlay > .modal-card, #modalOverlay > .modal-card { max-width:92%; width:min(780px,96%); margin:12px; background: rgba(255,255,255,0.22); padding:20px; border-radius:14px; backdrop-filter: blur(10px); }
 
-.message-menu-content button {
-  background: none;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  color: #0078FF;
-}
+/* ========== Toast ========== */
+.toast{ position:fixed; bottom:28px; left:50%; transform:translateX(-50%); padding:10px 16px; background: rgba(0,0,0,0.65); color:white; border-radius:12px; z-index:1600; }
+.toast.hidden{ display:none; }
 
-.message-menu:hover .message-menu-content {
-  display: flex;
-}
-
-/* ---------------- Composer ---------------- */
-.composer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 10px;
-  display: flex;
-  gap: 10px;
-  z-index: 1200;
-  background: rgba(225,242,255,0.20);
-  backdrop-filter: blur(10px);
-}
-
-.composer input[type="text"] {
-  flex: 1;
-  padding: 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(77,166,255,0.20);
-  background: rgba(255,255,255,0.20);
-  backdrop-filter: blur(6px);
-  color: #0078FF;
-}
-
-.composer button {
-  padding: 10px 16px;
-  border-radius: 12px;
-  border: none;
-  background: rgba(225,242,255,0.25);
-  backdrop-filter: blur(8px);
-  color: #0078FF;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.composer button:hover {
-  background: rgba(225,242,255,0.40);
-}
-
-/* ---------------- Popups ---------------- */
-.popup {
-  display: none;
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  background: rgba(225,242,255,0.25);
-  backdrop-filter: blur(12px);
-  border-radius: 14px;
-  padding: 20px;
-  z-index: 2000;
-  width: 90%;
-  max-width: 400px;
-}
-
-.popup.show {
-  display: block;
-}
-
-/* ---------------- Version ---------------- */
-.version {
-  font-size: 12px;
-  color: #0078FF;
-  margin-top: auto;
-  text-align: center;
+/* ========== responsive tweaks ========== */
+@media (max-width:900px){
+  .top-circles{ left:50%; transform:translateX(-50%); top:8px; }
+  .sidebar{ width:200px; }
+  .posts{ margin:90px 12px 140px 12px; }
+  .composer{ width: calc(100% - 24px); left: 12px; transform:none; }
 }
