@@ -13,22 +13,24 @@
 <!-- Wallpaper -->
 <div class="background"></div>
 
-<!-- Topbar -->
-<div class="topbar glass">
-  <button id="adminBtn">A</button>
-  <div class="title">Forumate</div>
-  <span class="versionLabel">v7.6</span>
-  <button id="infoBtn">ℹ️</button>
-  <button id="menuBtn" class="hamburger">☰</button>
+<!-- Top circular controls -->
+<div class="top-controls">
+  <div id="usernameCircle" class="circle glass">Name</div>
+  <div id="adminBtn" class="circle glass">A</div>
+  <div id="menuBtn" class="circle glass hamburger">☰</div>
 </div>
 
 <!-- Sidebar -->
 <div id="sidebar" class="sidebar glass">
-  <button id="seeBugsBtn">See Bugs</button>
-  <button id="reportBugBtn">Report Bug</button>
+  <div id="adminControls" class="admin-only">
+    <button id="seeBugsBtn" class="btn glass">See Bugs</button>
+    <button id="reportBugBtn" class="btn glass">Report Bug</button>
+    <button id="resetChatBtn" class="btn glass">Reset Chat</button>
+    <button id="infoBtn" class="btn glass">Info</button>
+  </div>
 </div>
 
-<!-- Posts container -->
+<!-- Posts -->
 <div id="posts" class="posts"></div>
 
 <!-- Composer -->
@@ -36,19 +38,28 @@
   <input type="text" id="nameInput" placeholder="Name">
   <textarea id="messageInput" placeholder="Message"></textarea>
   <input type="text" id="imageInput" placeholder="Image URL (optional)">
-  <button id="postBtn" class="btn primary">Post</button>
+  <button id="postBtn" class="btn glass">Post</button>
 </div>
 
-<!-- Admin Modal -->
+<!-- Admin Login Modal -->
 <div id="adminModal" class="modal hidden">
   <div class="modal-card glass">
     <h3>Admin Login</h3>
     <input type="text" id="adminUser" placeholder="Username">
     <input type="password" id="adminPass" placeholder="Password">
     <div class="modal-actions">
-      <button id="adminLoginBtn" class="btn primary">Login</button>
-      <button id="closeAdminModal" class="btn secondary">Close</button>
+      <button id="adminLoginBtn" class="btn glass">Login</button>
+      <button id="closeAdminModal" class="btn glass">Close</button>
     </div>
+  </div>
+</div>
+
+<!-- Bug Modal -->
+<div id="bugsModal" class="modal hidden">
+  <div class="modal-card glass wide">
+    <h3>Bug Reports</h3>
+    <div id="bugsList" class="posts"></div>
+    <button id="closeBugsModal" class="btn glass">Close</button>
   </div>
 </div>
 
@@ -58,17 +69,7 @@
     <h3>Info</h3>
     <p>©MeltingDev</p>
     <p>Your ID: <span id="userNumber"></span></p>
-    <button id="resetChatBtn" class="btn primary">Reset Chat</button>
-    <button id="closeInfoModal" class="btn secondary">Close</button>
-  </div>
-</div>
-
-<!-- Bug Modal -->
-<div id="bugsModal" class="modal hidden">
-  <div class="modal-card wide glass">
-    <h3>Bug Reports</h3>
-    <div id="bugsList" class="posts"></div>
-    <button id="closeBugsModal" class="btn secondary">Close</button>
+    <button id="closeInfoModal" class="btn glass">Close</button>
   </div>
 </div>
 
