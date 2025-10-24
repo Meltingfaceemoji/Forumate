@@ -40,6 +40,7 @@ const postsDiv = document.getElementById("posts");
 const toast = document.getElementById("toast");
 const onlineCountEl = document.getElementById("onlineCount");
 const userNumberEl = document.getElementById("userNumber");
+const logoutBtn = document.getElementById("logoutBtn");
 
 // ======================
 // State
@@ -85,7 +86,7 @@ adminLoginBtn.addEventListener("click", () => {
     showToast("Admin logged in");
     adminModal.classList.add("hidden");
     seeBugsBtn.style.display = "block";
-    document.getElementById("logoutBtn").style.display = "block";
+    logoutBtn.style.display = "block";
   } else {
     showToast("Incorrect credentials");
   }
@@ -94,10 +95,10 @@ adminLoginBtn.addEventListener("click", () => {
 // ======================
 // Logout Admin
 // ======================
-document.getElementById("logoutBtn").addEventListener("click", () => {
+logoutBtn.addEventListener("click", () => {
   isAdmin = false;
   seeBugsBtn.style.display = "none";
-  document.getElementById("logoutBtn").style.display = "none";
+  logoutBtn.style.display = "none";
   showToast("Admin logged out");
 });
 
@@ -130,15 +131,18 @@ db.ref("posts").on("value", snapshot => {
   postsDiv.innerHTML = "";
   const posts = snapshot.val();
   if(!posts) return;
+
   Object.keys(posts).forEach(key => {
     const p = posts[key];
     const postEl = document.createElement("div");
     postEl.classList.add("post");
 
-    let html = `<span class="owner">${p.owner ? "OWNER" : p.name}</span>: ${p.message}`;
+    let nameSpan = `<span style="color:${p.owner ? 'red':'#004080'}; font-weight:${p.owner ? '700':'500'};">${p.owner ? "OWNER" : p.name}</span>`;
+    let html = `${nameSpan}: ${p.message}`;
     if(p.image) html += `<img src="${p.image}">`;
 
     html += `<div class="post-meta">${new Date(p.timestamp).toLocaleTimeString()}</div>`;
+    postEl.innerHTML = html;
 
     if(isAdmin) {
       const deleteBtn = document.createElement("button");
@@ -150,7 +154,6 @@ db.ref("posts").on("value", snapshot => {
       postEl.appendChild(deleteBtn);
     }
 
-    postEl.innerHTML = html + (postEl.innerHTML);
     postsDiv.appendChild(postEl);
   });
 });
@@ -206,8 +209,15 @@ infoBtn.addEventListener("click", () => infoModal.classList.remove("hidden"));
 closeInfoModal.addEventListener("click", () => infoModal.classList.add("hidden"));
 
 // ======================
-// Online Counter (simple random for demo)
+// Online Counter
 // ======================
 setInterval(() => {
   onlineCountEl.textContent = "Online: " + (Math.floor(Math.random() * 10) + 1);
 }, 3000);
+
+// ======================
+// Version & Last Update
+// ======================
+const versionLabel = document.querySelector(".versionLabel");
+const lastUpdated = new Date();
+versionLabel.textContent = "v7.4 - Updated: " + lastUpdated.toLocaleDateString();
