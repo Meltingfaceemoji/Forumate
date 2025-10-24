@@ -1,107 +1,104 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Forumate v7.4 — Codename Simplicity</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forumate v7.4 — Simplicity</title>
+<link rel="stylesheet" href="style.css">
 
-  <!-- styles + will be provided next step -->
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase SDKs (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
-  <!-- Wallpaper (exact filename: Wallpaper.png) -->
-  <div class="wallpaper" aria-hidden="true"></div>
 
-  <!-- Topbar -->
-  <header class="topbar" role="banner">
-    <div class="left">
-      <button id="menuBtn" class="icon-btn" aria-label="Menu">☰</button>
-      <div class="brand">Forumate</div>
-    </div>
+<!-- Wallpaper -->
+<div class="wallpaper"></div>
 
-    <div class="center">
-      <div id="versionLabel" class="versionLabel">v7.4</div>
-      <div id="updateCheck" class="updateSmall">Checking…</div>
-    </div>
+<!-- Top Bar -->
+<header class="topbar">
+  <div class="left">
+    <button id="menuBtn" class="icon-btn">☰</button>
+    <div class="brand">Forumate</div>
+  </div>
+  <div class="center">
+    <div id="versionLabel">v7.4</div>
+    <div id="updateCheck" class="updateSmall">Checking…</div>
+  </div>
+  <div class="right">
+    <button id="infoBtn" class="icon-btn" title="Info">i</button>
+    <button id="adminBtn" class="icon-btn" title="Admin">A</button>
+  </div>
+</header>
 
-    <div class="right">
-      <button id="infoBtn" class="icon-btn" title="Info">i</button>
-      <button id="adminBtn" class="icon-btn" title="Admin">A</button>
-    </div>
-  </header>
-
-  <!-- Sidebar -->
-  <aside id="sidebar" class="sidebar" aria-hidden="true">
-    <button id="closeSidebar" class="sidebar-close" aria-label="Close sidebar">✕</button>
-    <div class="sidebar-inner">
-      <button id="reportBugBtn" class="side-btn">Report a bug</button>
-      <button id="seeBugsBtn" class="side-btn" style="display:none">See bug reports</button>
-      <button id="pinnedBtn" class="side-btn">Pinned posts</button>
-      <button id="settingsBtn" class="side-btn">Settings</button>
-      <button id="logoutBtn" class="side-btn" style="display:none">Logout admin</button>
-      <div class="sidebar-footer">
-        <div id="onlineCount">Online: 0</div>
-        <div id="lastUpdated" class="muted">Last updated: 2025-10-23</div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Main area -->
-  <main class="main" role="main">
-    <section id="posts" class="posts" aria-live="polite"></section>
-
-    <section class="composer">
-      <input id="nameInput" class="composer-input" placeholder="Name (keeps # number)" autocomplete="name" />
-      <input id="imageInput" class="composer-input" placeholder="Image URL (optional)" autocomplete="url" />
-      <textarea id="messageInput" class="composer-textarea" rows="2" placeholder="Message — Shift+Enter for newline"></textarea>
-      <div class="composer-row">
-        <button id="postBtn" class="btn primary">Post</button>
-        <button id="submitBugBtn" class="btn secondary" style="display:none">Submit bug</button>
-      </div>
-    </section>
-  </main>
-
-  <!-- Admin modal (glass) -->
-  <div id="adminModal" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal-card glass">
-      <button class="modal-close" id="closeAdminModal" aria-label="close">✕</button>
-      <h3>Admin Login</h3>
-      <input id="adminUser" class="modal-input" placeholder="username" />
-      <input id="adminPass" class="modal-input" type="password" placeholder="password" />
-      <div class="modal-actions">
-        <button id="adminLoginBtn" class="btn primary">Login</button>
-      </div>
+<!-- Sidebar -->
+<aside id="sidebar" class="sidebar">
+  <button id="closeSidebar" class="sidebar-close">✕</button>
+  <div class="sidebar-inner">
+    <button id="reportBugBtn" class="side-btn">Report Bug</button>
+    <button id="seeBugsBtn" class="side-btn" style="display:none">See Bug Reports</button>
+    <button id="pinnedBtn" class="side-btn">Pinned Posts</button>
+    <button id="settingsBtn" class="side-btn">Settings</button>
+    <button id="logoutBtn" class="side-btn" style="display:none">Logout Admin</button>
+    <div class="sidebar-footer">
+      <div id="onlineCount">Online: 0</div>
+      <div id="lastUpdated" class="muted">Last updated: 2025-10-24</div>
     </div>
   </div>
+</aside>
 
-  <!-- Info modal -->
-  <div id="infoModal" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal-card glass">
-      <button class="modal-close" id="closeInfoModal" aria-label="close">✕</button>
-      <h3>Info</h3>
-      <p>© MeltingDev</p>
-      <p>Your ID: <span id="userNumber">#0</span></p>
-      <p id="versionFull" class="muted">v7.4 — Codename Simplicity</p>
+<!-- Main -->
+<main class="main">
+  <section id="posts" class="posts"></section>
+
+  <section class="composer">
+    <input id="nameInput" placeholder="Name" />
+    <input id="imageInput" placeholder="Image URL (optional)" />
+    <textarea id="messageInput" placeholder="Message — Shift+Enter for newline"></textarea>
+    <div class="composer-row">
+      <button id="postBtn" class="btn primary">Post</button>
+      <button id="submitBugBtn" class="btn secondary" style="display:none">Submit Bug</button>
+    </div>
+  </section>
+</main>
+
+<!-- Admin Modal -->
+<div id="adminModal" class="modal hidden">
+  <div class="modal-card glass">
+    <button class="modal-close" id="closeAdminModal">✕</button>
+    <h3>Admin Login</h3>
+    <input id="adminUser" placeholder="Username" />
+    <input id="adminPass" type="password" placeholder="Password" />
+    <div class="modal-actions">
+      <button id="adminLoginBtn" class="btn primary">Login</button>
     </div>
   </div>
+</div>
 
-  <!-- Bugs modal (admin) -->
-  <div id="bugsModal" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal-card glass wide">
-      <button class="modal-close" id="closeBugsModal" aria-label="close">✕</button>
-      <h3>Bug reports</h3>
-      <div id="bugsList" class="bugs-list"></div>
-    </div>
+<!-- Info Modal -->
+<div id="infoModal" class="modal hidden">
+  <div class="modal-card glass">
+    <button class="modal-close" id="closeInfoModal">✕</button>
+    <h3>Info</h3>
+    <p>© MeltingDev</p>
+    <p>Your ID: <span id="userNumber">#0</span></p>
+    <p id="versionFull">v7.4 — Simplicity</p>
   </div>
+</div>
 
-  <!-- Toast -->
-  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+<!-- Bugs Modal -->
+<div id="bugsModal" class="modal hidden">
+  <div class="modal-card glass wide">
+    <button class="modal-close" id="closeBugsModal">✕</button>
+    <h3>Bug Reports</h3>
+    <div id="bugsList"></div>
+  </div>
+</div>
 
-  <!-- main script (will be provided step 3) -->
-  <script src="script.js" defer></script>
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- Script -->
+<script src="script.js" defer></script>
 </body>
 </html>
