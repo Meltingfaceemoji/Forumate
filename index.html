@@ -3,102 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forumate v7.4 — Simplicity</title>
+<title>Forumate v7.4 - Simplicity</title>
 <link rel="stylesheet" href="style.css">
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
+  <div class="wallpaper"></div>
 
-<!-- Wallpaper -->
-<div class="wallpaper"></div>
-
-<!-- Top Bar -->
-<header class="topbar">
-  <div class="left">
-    <button id="menuBtn" class="icon-btn">☰</button>
-    <div class="brand">Forumate</div>
-  </div>
-  <div class="center">
-    <div id="versionLabel">v7.4</div>
-    <div id="updateCheck" class="updateSmall">Checking…</div>
-  </div>
-  <div class="right">
-    <button id="infoBtn" class="icon-btn" title="Info">i</button>
-    <button id="adminBtn" class="icon-btn" title="Admin">A</button>
-  </div>
-</header>
-
-<!-- Sidebar -->
-<aside id="sidebar" class="sidebar">
-  <button id="closeSidebar" class="sidebar-close">✕</button>
-  <div class="sidebar-inner">
-    <button id="reportBugBtn" class="side-btn">Report Bug</button>
-    <button id="seeBugsBtn" class="side-btn" style="display:none">See Bug Reports</button>
-    <button id="pinnedBtn" class="side-btn">Pinned Posts</button>
-    <button id="settingsBtn" class="side-btn">Settings</button>
-    <button id="logoutBtn" class="side-btn" style="display:none">Logout Admin</button>
-    <div class="sidebar-footer">
-      <div id="onlineCount">Online: 0</div>
-      <div id="lastUpdated" class="muted">Last updated: 2025-10-24</div>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="left">
+      <button id="menuBtn" class="icon-btn">&#9776;</button>
+      <span class="brand">Forumate</span>
+    </div>
+    <div class="center">
+      <button id="adminBtn" class="icon-btn">A</button>
+      <button id="infoBtn" class="icon-btn">i</button>
+    </div>
+    <div class="right">
+      <span class="versionLabel" id="versionLabel">7.4</span>
+      <span class="updateSmall" id="updateCheck"></span>
     </div>
   </div>
-</aside>
 
-<!-- Main -->
-<main class="main">
-  <section id="posts" class="posts"></section>
-
-  <section class="composer">
-    <input id="nameInput" placeholder="Name" />
-    <input id="imageInput" placeholder="Image URL (optional)" />
-    <textarea id="messageInput" placeholder="Message — Shift+Enter for newline"></textarea>
-    <div class="composer-row">
-      <button id="postBtn" class="btn primary">Post</button>
-      <button id="submitBugBtn" class="btn secondary" style="display:none">Submit Bug</button>
-    </div>
-  </section>
-</main>
-
-<!-- Admin Modal -->
-<div id="adminModal" class="modal hidden">
-  <div class="modal-card glass">
-    <button class="modal-close" id="closeAdminModal">✕</button>
-    <h3>Admin Login</h3>
-    <input id="adminUser" placeholder="Username" />
-    <input id="adminPass" type="password" placeholder="Password" />
-    <div class="modal-actions">
-      <button id="adminLoginBtn" class="btn primary">Login</button>
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar">
+    <button id="closeSidebar" class="sidebar-close">&times;</button>
+    <div class="sidebar-inner">
+      <button class="side-btn" id="reportBugBtn">Report Bug</button>
+      <button class="side-btn" id="seeBugsBtn" style="display:none;">See Bug Reports</button>
+      <button class="side-btn" id="logoutBtn" style="display:none;">Logout</button>
+      <span class="sidebar-footer" id="onlineCount">Online: 0</span>
     </div>
   </div>
-</div>
 
-<!-- Info Modal -->
-<div id="infoModal" class="modal hidden">
-  <div class="modal-card glass">
-    <button class="modal-close" id="closeInfoModal">✕</button>
-    <h3>Info</h3>
-    <p>© MeltingDev</p>
-    <p>Your ID: <span id="userNumber">#0</span></p>
-    <p id="versionFull">v7.4 — Simplicity</p>
+  <!-- Main Content -->
+  <div class="main">
+    <div class="posts" id="posts"></div>
+    <div class="composer glass">
+      <input id="nameInput" placeholder="Your name">
+      <textarea id="messageInput" placeholder="Message" rows="3"></textarea>
+      <input id="imageInput" placeholder="Image URL (optional)">
+      <div class="composer-row">
+        <button id="postBtn" class="btn primary">Post</button>
+        <button id="submitBugBtn" class="btn secondary" style="display:none;">Submit Bug</button>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- Bugs Modal -->
-<div id="bugsModal" class="modal hidden">
-  <div class="modal-card glass wide">
-    <button class="modal-close" id="closeBugsModal">✕</button>
-    <h3>Bug Reports</h3>
-    <div id="bugsList"></div>
+  <!-- Modals -->
+  <div id="adminModal" class="modal hidden">
+    <div class="modal-card glass">
+      <button id="closeAdminModal" class="modal-close">&times;</button>
+      <h3>Admin Login</h3>
+      <input id="adminUser" class="modal-input" placeholder="Username">
+      <input id="adminPass" class="modal-input" placeholder="Password" type="password">
+      <div class="modal-actions">
+        <button id="adminLoginBtn" class="btn primary">Login</button>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- Toast -->
-<div id="toast" class="toast"></div>
+  <div id="infoModal" class="modal hidden">
+    <div class="modal-card glass">
+      <button id="closeInfoModal" class="modal-close">&times;</button>
+      <h3>Info</h3>
+      <p>© MeltingDev</p>
+      <p>Your # number: <span id="userNumber">0</span></p>
+    </div>
+  </div>
 
-<!-- Script -->
-<script src="script.js" defer></script>
+  <div id="bugsModal" class="modal hidden">
+    <div class="modal-card glass wide">
+      <button id="closeBugsModal" class="modal-close">&times;</button>
+      <h3>Bug Reports</h3>
+      <div id="bugsList" style="max-height:400px;overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+<script src="script.js"></script>
 </body>
 </html>
