@@ -1,5 +1,5 @@
 // =======================
-// Firebase configuration
+// Firebase config
 // =======================
 const firebaseConfig = {
   apiKey: "AIzaSyA1pylg4PQS_hXhKiLvYcdgh5jbLYhME40",
@@ -12,7 +12,6 @@ const firebaseConfig = {
   measurementId: "G-H877ZK81ZM"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -43,17 +42,24 @@ const bugsModal = document.getElementById("bugsModal");
 const seeBugsBtn = document.getElementById("seeBugsBtn");
 const closeBugsModal = document.getElementById("closeBugsModal");
 const bugsList = document.getElementById("bugsList");
-const userNumberSpan = document.getElementById("userNumber");
 const onlineCountDiv = document.getElementById("onlineCount");
 const versionLabel = document.getElementById("versionLabel");
+const updateCheck = document.getElementById("updateCheck");
+const lastUpdated = document.getElementById("lastUpdated");
+const userNumberSpan = document.getElementById("userNumber");
 
 // =======================
-// App State
+// State
 // =======================
 let isAdmin = false;
-let currentUserId = null;
-let usersIPMap = {}; // keep track of IP to number
 let version = "7.4";
+let currentUserId = localStorage.getItem("forumateUserId");
+if(!currentUserId){
+  const newUserRef = db.ref("users").push();
+  currentUserId = newUserRef.key;
+  newUserRef.set({counter: Math.floor(Math.random()*9999)});
+  localStorage.setItem("forumateUserId", currentUserId);
+}
 
 // =======================
 // Sidebar
@@ -66,7 +72,12 @@ closeSidebar.addEventListener("click",()=>{sidebar.classList.remove("open");});
 // =======================
 adminBtn.addEventListener("click",()=>{adminModal.classList.remove("hidden");});
 closeAdminModal.addEventListener("click",()=>{adminModal.classList.add("hidden");});
-logoutBtn.addEventListener("click",()=>{isAdmin=false;logoutBtn.style.display="none";seeBugsBtn.style.display="none";});
+logoutBtn.addEventListener("click",()=>{
+  isAdmin=false;
+  logoutBtn.style.display="none";
+  seeBugsBtn.style.display="none";
+  showToast("Logged out");
+});
 
 adminLoginBtn.addEventListener("click",()=>{
   if(adminUser.value==="melting" && adminPass.value==="melting"){
@@ -87,10 +98,10 @@ infoBtn.addEventListener("click",()=>{infoModal.classList.remove("hidden");});
 closeInfoModal.addEventListener("click",()=>{infoModal.classList.add("hidden");});
 
 // =======================
-// Posting
+// Posts
 // =======================
-postBtn.addEventListener("click",()=>{submitPost();});
-messageInput.addEventListener("keydown",(e)=>{
+postBtn.addEventListener("click",submitPost);
+messageInput.addEventListener("keydown",e=>{
   if(e.key==="Enter" && !e.shiftKey){e.preventDefault();submitPost();}
 });
 
@@ -100,15 +111,14 @@ function submitPost(){
   const image=imageInput.value.trim();
   if(!message && !image){showToast("Message or image required");return;}
 
-  const postRef=db.ref("posts").push();
-  const postData={
+  db.ref("posts").push({
     name,
     message,
     image:image||"",
     timestamp:Date.now(),
-    ip:getIPPlaceholder() // placeholder IP since we cannot get real
-  };
-  postRef.set(postData);
+    userId:currentUserId
+  });
+
   messageInput.value="";imageInput.value="";
 }
 
@@ -122,8 +132,8 @@ db.ref("posts").on("value",snapshot=>{
     const p=posts[key];
     const div=document.createElement("div");
     div.className="post";
-    const displayName=isAdmin&&p.name.toLowerCase()==="melting"?"OWNER":p.name;
-    const number=getNumberForIP(p.ip);
+    const displayName=(isAdmin && p.name.toLowerCase()==="melting")?"<span class='owner'>OWNER</span>":p.name;
+    const number=p.userId?db.ref("users/"+p.userId).once("value").then(s=>s.val()?.counter || 0):0;
     div.innerHTML=`<div class="post-meta">${displayName} #${number}</div>${p.image?`<img src="${p.image}" />`:''}<p>${p.message}</p>`;
     postsDiv.appendChild(div);
   });
@@ -150,8 +160,7 @@ submitBugBtn.addEventListener("click",()=>{
 });
 
 // =======================
-// See bug reports (admin)
-// =======================
+// See bugs (admin)
 seeBugsBtn.addEventListener("click",()=>{
   if(!isAdmin)return;
   bugsModal.classList.remove("hidden");
@@ -170,7 +179,7 @@ seeBugsBtn.addEventListener("click",()=>{
 closeBugsModal.addEventListener("click",()=>{bugsModal.classList.add("hidden");});
 
 // =======================
-// Toast helper
+// Toast
 // =======================
 function showToast(msg){
   const t=document.getElementById("toast");
@@ -180,40 +189,23 @@ function showToast(msg){
 }
 
 // =======================
-// Online counter placeholder
+// Online count
 // =======================
 setInterval(()=>{
   db.ref("posts").once("value").then(snapshot=>{
-    const posts=snapshot.val()||{};
-    onlineCountDiv.textContent="Online: "+Object.keys(posts).length;
+    onlineCountDiv.textContent="Online: "+Object.keys(snapshot.val()||{}).length;
   });
 },3000);
 
 // =======================
-// User #number per IP
+// Version / update check
 // =======================
-function getIPPlaceholder(){
-  // Since real IP is restricted, return a random consistent pseudo-IP for demo
-  if(!currentUserId)currentUserId=Math.floor(Math.random()*9999);
-  return currentUserId;
-}
-function getNumberForIP(ip){
-  if(!usersIPMap[ip])usersIPMap[ip]=ip; // simple mapping
-  return ip;
-}
+versionLabel.textContent=version;
+lastUpdated.textContent="Last updated: 2025-10-24";
 
-// =======================
-// Version / last updated
-// =======================
-versionLabel.textContent="v7.4";
-document.getElementById("lastUpdated").textContent="Last updated: 2025-10-24";
-
-// =======================
-// Update checker (github)
 fetch("https://raw.githubusercontent.com/Meltingfaceemoji/Forumate/main/index.html")
 .then(r=>r.text())
 .then(txt=>{
-  if(txt.includes("v7.4")){document.getElementById("updateCheck").textContent="Up to date";}
-  else{document.getElementById("updateCheck").textContent="Update available";}
+  updateCheck.textContent = txt.includes(`v${version}`)?"Up to date":"Update available";
 })
-.catch(()=>{document.getElementById("updateCheck").textContent="Check failed";});
+.catch(()=>{updateCheck.textContent="Check failed";});
