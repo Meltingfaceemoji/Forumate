@@ -1,8 +1,8 @@
-// =======================
-// Firebase config
-// =======================
+// ======================
+// Firebase Config
+// ======================
 const firebaseConfig = {
-  apiKey: "AIzaSyA1pylg4PQS_hXhKiLvYcdgh5jbLYhME40",
+  apiKey: "YOUR_API_KEY",
   authDomain: "html-test-forum.firebaseapp.com",
   databaseURL: "https://html-test-forum-default-rtdb.firebaseio.com",
   projectId: "html-test-forum",
@@ -14,214 +14,179 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// =======================
+// ======================
 // Elements
-// =======================
-const sidebar = document.getElementById("sidebar");
+// ======================
+const postsEl = document.getElementById("posts");
+const nameInput = document.getElementById("nameInput");
+const messageInput = document.getElementById("messageInput");
+const imageInput = document.getElementById("imageInput");
+const postBtn = document.getElementById("postBtn");
 const menuBtn = document.getElementById("menuBtn");
+const sidebar = document.getElementById("sidebar");
 const closeSidebar = document.getElementById("closeSidebar");
 const adminBtn = document.getElementById("adminBtn");
 const adminModal = document.getElementById("adminModal");
 const closeAdminModal = document.getElementById("closeAdminModal");
-const adminLoginBtn = document.getElementById("adminLoginBtn");
 const adminUser = document.getElementById("adminUser");
 const adminPass = document.getElementById("adminPass");
-const logoutBtn = document.getElementById("logoutBtn");
-const seeBugsBtn = document.getElementById("seeBugsBtn");
-const postsDiv = document.getElementById("posts");
-const postBtn = document.getElementById("postBtn");
-const nameInput = document.getElementById("nameInput");
-const messageInput = document.getElementById("messageInput");
-const imageInput = document.getElementById("imageInput");
+const adminLoginBtn = document.getElementById("adminLoginBtn");
 const reportBugBtn = document.getElementById("reportBugBtn");
 const submitBugBtn = document.getElementById("submitBugBtn");
+const seeBugsBtn = document.getElementById("seeBugsBtn");
+const bugsModal = document.getElementById("bugsModal");
+const bugsList = document.getElementById("bugsList");
+const closeBugsModal = document.getElementById("closeBugsModal");
 const infoBtn = document.getElementById("infoBtn");
 const infoModal = document.getElementById("infoModal");
 const closeInfoModal = document.getElementById("closeInfoModal");
-const bugsModal = document.getElementById("bugsModal");
-const closeBugsModal = document.getElementById("closeBugsModal");
-const bugsList = document.getElementById("bugsList");
-const onlineCountDiv = document.getElementById("onlineCount");
+const userNumberEl = document.getElementById("userNumber");
+const toast = document.getElementById("toast");
 const versionLabel = document.getElementById("versionLabel");
 const updateCheck = document.getElementById("updateCheck");
-const lastUpdated = document.getElementById("lastUpdated");
-const userNumberSpan = document.getElementById("userNumber");
+const logoutBtn = document.getElementById("logoutBtn");
 
-// =======================
-// State
-// =======================
-let isAdmin = false;
-let version = "7.4";
-let currentUserId = localStorage.getItem("forumateUserId");
+let adminLoggedIn = false;
 
-if(!currentUserId){
-    const newUserRef = db.ref("users").push();
-    currentUserId = newUserRef.key;
-    const randCounter = Math.floor(Math.random()*9999)+1;
-    newUserRef.set({counter: randCounter});
-    localStorage.setItem("forumateUserId", currentUserId);
+// ======================
+// Utilities
+// ======================
+function showToast(msg){
+  toast.innerText = msg;
+  toast.classList.add("show");
+  setTimeout(()=>toast.classList.remove("show"),2000);
 }
-db.ref("users/"+currentUserId).once("value").then(s=>{
-    const counter = s.val()?.counter || 0;
-    userNumberSpan.textContent = counter;
-});
 
-// =======================
-// Sidebar Toggle
-// =======================
-menuBtn.addEventListener("click",()=>{sidebar.classList.add("open");});
-closeSidebar.addEventListener("click",()=>{sidebar.classList.remove("open");});
+// Generate or retrieve device #number
+let deviceNumber = localStorage.getItem("deviceNumber");
+if(!deviceNumber){
+  deviceNumber = Math.floor(Math.random()*9000)+1000;
+  localStorage.setItem("deviceNumber",deviceNumber);
+}
+userNumberEl.innerText = deviceNumber;
 
-// =======================
+// ======================
+// Sidebar
+// ======================
+menuBtn.addEventListener("click",()=>sidebar.classList.add("open"));
+closeSidebar.addEventListener("click",()=>sidebar.classList.remove("open"));
+
+// ======================
 // Admin Login
-// =======================
-adminBtn.addEventListener("click",()=>{adminModal.classList.remove("hidden");});
-closeAdminModal.addEventListener("click",()=>{adminModal.classList.add("hidden");});
+// ======================
+adminBtn.addEventListener("click",()=>adminModal.classList.remove("hidden"));
+closeAdminModal.addEventListener("click",()=>adminModal.classList.add("hidden"));
 
 adminLoginBtn.addEventListener("click",()=>{
-    if(adminUser.value==="melting" && adminPass.value==="melting"){
-        isAdmin=true;
-        logoutBtn.style.display="block";
-        seeBugsBtn.style.display="block";
-        adminModal.classList.add("hidden");
-        showToast("Logged in as OWNER");
-        fetchPosts(); // refresh posts to show OWNER in red
-    } else {
-        showToast("Incorrect credentials");
-    }
+  if(adminUser.value.toLowerCase() === "melting" && adminPass.value === "melting"){
+    adminLoggedIn = true;
+    showToast("Admin Logged In");
+    seeBugsBtn.style.display = "block";
+    logoutBtn.style.display = "block";
+    adminModal.classList.add("hidden");
+  }else{
+    showToast("Incorrect credentials");
+  }
 });
 
 logoutBtn.addEventListener("click",()=>{
-    isAdmin=false;
-    logoutBtn.style.display="none";
-    seeBugsBtn.style.display="none";
-    showToast("Logged out");
-    fetchPosts(); // refresh posts to remove OWNER style
+  adminLoggedIn = false;
+  seeBugsBtn.style.display = "none";
+  logoutBtn.style.display = "none";
+  showToast("Admin Logged Out");
 });
 
-// =======================
-// Info Modal
-// =======================
-infoBtn.addEventListener("click",()=>{infoModal.classList.remove("hidden");});
-closeInfoModal.addEventListener("click",()=>{infoModal.classList.add("hidden");});
-
-// =======================
-// Posting
-// =======================
-postBtn.addEventListener("click",submitPost);
-messageInput.addEventListener("keydown",e=>{
-    if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); submitPost(); }
+// ======================
+// Post messages
+// ======================
+postBtn.addEventListener("click",()=>{
+  const name = nameInput.value.trim() || "Anonymous";
+  const msg = messageInput.value.trim();
+  const img = imageInput.value.trim();
+  if(!msg) return;
+  const postData = {
+    name: name,
+    message: msg,
+    img: img || "",
+    owner: adminLoggedIn && name.toLowerCase()==="melting"?true:false,
+    timestamp: Date.now(),
+    device: deviceNumber
+  };
+  db.ref("posts").push(postData);
+  messageInput.value = "";
+  imageInput.value = "";
 });
 
-function submitPost(){
-    const name = nameInput.value.trim() || "Anonymous";
-    const message = messageInput.value.trim();
-    const image = imageInput.value.trim();
-    if(!message && !image){ showToast("Message or image required"); return; }
-    const postRef = db.ref("posts").push();
-    postRef.set({
-        name: name,
-        message: message,
-        image: image,
-        timestamp: Date.now(),
-        userId: currentUserId
-    });
-    messageInput.value="";
-    imageInput.value="";
-}
+// ======================
+// Display posts
+// ======================
+db.ref("posts").on("value",snapshot=>{
+  postsEl.innerHTML="";
+  snapshot.forEach(snap=>{
+    const data = snap.val();
+    const div = document.createElement("div");
+    div.className="post glass";
+    div.innerHTML=`<span class="owner">${data.owner?data.name+" (OWNER)":data.name}</span>: ${data.message}`;
+    if(data.img) div.innerHTML+=`<br><img src="${data.img}">`;
+    postsEl.appendChild(div);
+  });
+});
 
-// =======================
-// Fetch posts
-// =======================
-function fetchPosts(){
-    db.ref("posts").on("value",snapshot=>{
-        postsDiv.innerHTML="";
-        const posts=snapshot.val()||{};
-        Object.keys(posts).sort((a,b)=>posts[a].timestamp - posts[b].timestamp).forEach(key=>{
-            const p=posts[key];
-            const div=document.createElement("div");
-            div.className="post glass";
-            let displayName = p.name;
-            if(isAdmin && p.name.toLowerCase() === "melting"){
-                displayName = "<span class='owner'>OWNER</span>";
-            }
-            div.innerHTML = `<div class="post-meta">${displayName}</div>` +
-                            (p.image?`<img src="${p.image}"/>`:'') +
-                            `<p>${p.message}</p>`;
-            postsDiv.appendChild(div);
-        });
-    });
-}
-fetchPosts();
-
-// =======================
-// Bug Reporting
-// =======================
+// ======================
+// Bug Reports
+// ======================
 reportBugBtn.addEventListener("click",()=>{
-    sidebar.classList.remove("open");
-    submitBugBtn.style.display="block";
-    postBtn.style.display="none";
-    postsDiv.style.display="none";
+  submitBugBtn.style.display="block";
+  messageInput.value="";
+  nameInput.value="";
+  sidebar.classList.remove("open");
+  showToast("Enter bug in composer then press Submit Bug");
 });
+
 submitBugBtn.addEventListener("click",()=>{
-    const bugMsg = messageInput.value.trim();
-    if(!bugMsg){ showToast("Enter a bug message"); return; }
-    db.ref("bugs").push({message:bugMsg,timestamp:Date.now()});
-    showToast("Bug submitted");
-    messageInput.value="";
-    submitBugBtn.style.display="none";
-    postBtn.style.display="block";
-    postsDiv.style.display="flex";
+  const bugMsg = messageInput.value.trim();
+  if(!bugMsg) return;
+  db.ref("bugs").push({message:bugMsg,timestamp:Date.now()});
+  messageInput.value="";
+  submitBugBtn.style.display="none";
+  showToast("Bug submitted");
 });
 
-// =======================
-// See Bugs (Admin)
-// =======================
+// See bug reports
 seeBugsBtn.addEventListener("click",()=>{
-    if(!isAdmin) return;
-    bugsModal.classList.remove("hidden");
-    db.ref("bugs").once("value").then(snapshot=>{
-        bugsList.innerHTML="";
-        const bugs = snapshot.val()||{};
-        Object.keys(bugs).sort((a,b)=>bugs[a].timestamp - bugs[b].timestamp).forEach(k=>{
-            const d=bugs[k];
-            const div=document.createElement("div");
-            div.className="post glass";
-            div.textContent=d.message;
-            bugsList.appendChild(div);
-        });
+  bugsModal.classList.remove("hidden");
+  db.ref("bugs").once("value",snapshot=>{
+    bugsList.innerHTML="";
+    snapshot.forEach(snap=>{
+      const data = snap.val();
+      const div = document.createElement("div");
+      div.className="glass";
+      div.style.margin="4px 0";
+      div.textContent=data.message;
+      bugsList.appendChild(div);
     });
+  });
 });
-closeBugsModal.addEventListener("click",()=>{bugsModal.classList.add("hidden");});
+closeBugsModal.addEventListener("click",()=>bugsModal.classList.add("hidden"));
 
-// =======================
-// Toast
-// =======================
-function showToast(msg){
-    const t=document.getElementById("toast");
-    t.textContent = msg;
-    t.classList.add("show");
-    setTimeout(()=>{t.classList.remove("show");},2500);
-}
+// ======================
+// Info Modal
+// ======================
+infoBtn.addEventListener("click",()=>infoModal.classList.remove("hidden"));
+closeInfoModal.addEventListener("click",()=>infoModal.classList.add("hidden"));
 
-// =======================
-// Online Count
-// =======================
-setInterval(()=>{
-    db.ref("posts").once("value").then(snapshot=>{
-        onlineCountDiv.textContent = "Online: "+Object.keys(snapshot.val()||{}).length;
-    });
-},3000);
+// ======================
+// Online Counter
+// ======================
+let onlineUsers = 1; // simplified demo
+document.getElementById("onlineCount").innerText="Online: "+onlineUsers;
 
-// =======================
-// Version & Update
-// =======================
-versionLabel.textContent=version;
-lastUpdated.textContent="Last updated: 2025-10-24";
-
+// ======================
+// Update Checker (simplified)
+// ======================
 fetch("https://raw.githubusercontent.com/Meltingfaceemoji/Forumate/main/index.html")
 .then(r=>r.text())
-.then(txt=>{
-    updateCheck.textContent = txt.includes(`v${version}`)?"Up to date":"Update available";
-})
-.catch(()=>{updateCheck.textContent="Check failed";});
+.then(t=>{
+  if(t.includes("7.4")) updateCheck.innerText="Up-to-date";
+  else updateCheck.innerText="Update available";
+});
