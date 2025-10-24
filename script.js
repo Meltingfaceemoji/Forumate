@@ -1,6 +1,6 @@
-/* Forumate v7.4 script.js — full rebuild (uses your Firebase config) */
+/* Forumate v7.4 — script.js (complete) */
 
-/* ---------------- Firebase config (your key included) ---------------- */
+/* ---------- Firebase config (user's key included) ---------- */
 const firebaseConfig = {
   apiKey: "AIzaSyA1pylg4PQS_hXhKiLvYcdgh5jbLYhME40",
   authDomain: "html-test-forum.firebaseapp.com",
@@ -13,328 +13,301 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-/* ---------------- DOM ---------------- */
-const menuButton = document.getElementById('menuButton');
+/* ---------- DOM ---------- */
+const menuBtn = document.getElementById('menuBtn');
 const sidebar = document.getElementById('sidebar');
 const closeSidebar = document.getElementById('closeSidebar');
-const reportBugBtn = document.getElementById('reportBug');
-const seeBugsBtn = document.getElementById('seeBugs');
-const pinnedViewBtn = document.getElementById('pinnedView');
-const settingsBtn = document.getElementById('settingsBtn');
-const logoutButton = document.getElementById('logoutButton');
+
+const reportBugBtn = document.getElementById('reportBugBtn');
+const seeBugsBtn = document.getElementById('seeBugsBtn');
+const pinnedBtn = document.getElementById('pinnedBtn');
+const logoutBtn = document.getElementById('logoutBtn');
 const onlineCountEl = document.getElementById('onlineCount');
 
-const infoButton = document.getElementById('infoButton');
-const infoPopup = document.getElementById('infoPopup');
-const closeInfo = document.getElementById('closeInfo');
-const userHashEl = document.getElementById('userHash');
+const infoBtn = document.getElementById('infoBtn');
+const infoModal = document.getElementById('infoModal');
+const closeInfoModal = document.getElementById('closeInfoModal');
+const userNumberEl = document.getElementById('userNumber');
 
-const adminButton = document.getElementById('adminButton');
-const adminPopup = document.getElementById('adminPopup');
-const closeAdminPopup = document.getElementById('closeAdminPopup');
-const loginButton = document.getElementById('loginButton');
+const adminBtn = document.getElementById('adminBtn');
+const adminModal = document.getElementById('adminModal');
+const closeAdminModal = document.getElementById('closeAdminModal');
+const adminLoginBtn = document.getElementById('adminLoginBtn');
 
-const messagesEl = document.getElementById('posts') || document.getElementById('posts') /* fallback */;
-const postsContainer = document.getElementById('posts') || document.getElementById('posts') /* safe */;
-const postsArea = document.getElementById('posts') || document.querySelector('.posts');
-const postsList = document.getElementById('posts') || document.querySelector('.posts');
-
-const postsRoot = document.getElementById('posts'); // will be created in index earlier if name differs
-const messagesContainer = document.getElementById('posts') || document.getElementById('messages') || document.querySelector('.posts') || document.getElementById('messages') || document.getElementById('posts');
-const postsDiv = document.getElementById('posts') || document.getElementById('messages') || document.querySelector('.posts') || document.querySelector('.message-container');
-
+const postsEl = document.getElementById('posts');
 const nameInput = document.getElementById('nameInput');
 const imageInput = document.getElementById('imageInput');
 const messageInput = document.getElementById('messageInput');
-const sendButton = document.getElementById('sendButton');
-const reportSubmitButton = document.getElementById('reportSubmitButton');
+const postBtn = document.getElementById('postBtn');
+const submitBugBtn = document.getElementById('submitBugBtn');
 
-/* ---------------- State ---------------- */
+const bugsModal = document.getElementById('bugsModal');
+const closeBugsModal = document.getElementById('closeBugsModal');
+const bugsListEl = document.getElementById('bugsList');
+
+const toastEl = document.getElementById('toast');
+const versionLabel = document.getElementById('versionLabel');
+const updateCheckEl = document.getElementById('updateCheck');
+const lastUpdatedEl = document.getElementById('lastUpdated');
+
+/* ---------- State ---------- */
 const ADMIN_USER = 'melting';
 const ADMIN_PASS = 'melting';
 let isAdmin = false;
 let myIP = null;
 let myNumber = null;
-let ipMapCache = null;
 const LAST_NAME_KEY = 'forumate_last_name';
+const LAST_IP_KEY = 'forumate_ip_fallback';
 
-/* ---------------- Utilities ---------------- */
-function $(id){return document.getElementById(id)}
-function show(el){ el && el.classList.remove('hidden'); el && el.setAttribute('aria-hidden','false'); }
-function hide(el){ el && el.classList.add('hidden'); el && el.setAttribute('aria-hidden','true'); }
+/* ---------- Helpers ---------- */
+function show(el){ if(!el) return; el.classList.remove('hidden'); el.setAttribute('aria-hidden','false'); }
+function hide(el){ if(!el) return; el.classList.add('hidden'); el.setAttribute('aria-hidden','true'); }
+function toast(msg, time=2500){ toastEl.textContent = msg; show(toastEl); setTimeout(()=>hide(toastEl), time); }
 
-/* ---------------- Sidebar handling (works on mobile & desktop) ---------------- */
-menuButton.addEventListener('click', () => {
+/* ---------- Sidebar behavior ---------- */
+menuBtn.addEventListener('click', ()=>{
   sidebar.classList.add('visible');
-  closeSidebar.style.display = 'block';
   sidebar.setAttribute('aria-hidden','false');
 });
-closeSidebar.addEventListener('click', () => {
+closeSidebar.addEventListener('click', ()=>{
   sidebar.classList.remove('visible');
-  closeSidebar.style.display = 'none';
   sidebar.setAttribute('aria-hidden','true');
 });
-new MutationObserver(()=>{
-  closeSidebar.style.display = sidebar.classList.contains('visible') ? 'block' : 'none';
-}).observe(sidebar,{attributes:true,attributeFilter:['class']});
+new MutationObserver(()=>{ closeSidebar.style.display = sidebar.classList.contains('visible') ? 'block' : 'none'; }).observe(sidebar, { attributes: true, attributeFilter: ['class'] });
 
-/* ---------------- Info popup ---------------- */
-infoButton.addEventListener('click', ()=> show(infoPopup));
-closeInfo.addEventListener('click', ()=> hide(infoPopup));
+/* ---------- Modals ---------- */
+adminBtn.addEventListener('click', ()=> show(adminModal));
+closeAdminModal.addEventListener('click', ()=> hide(adminModal));
+infoBtn.addEventListener('click', ()=> show(infoModal));
+closeInfoModal.addEventListener('click', ()=> hide(infoModal));
+if(closeBugsModal) closeBugsModal.addEventListener('click', ()=> hide(bugsModal));
 
-/* ---------------- Admin login popup ---------------- */
-adminButton.addEventListener('click', ()=> show(adminPopup));
-closeAdminPopup.addEventListener('click', ()=> hide(adminPopup));
-loginButton.addEventListener('click', ()=>{
-  const u = document.getElementById('adminUser').value.trim().toLowerCase();
-  const p = document.getElementById('adminPass').value;
-  if(u === ADMIN_USER && p === ADMIN_PASS){
-    isAdmin = true;
-    logoutButton.style.display = 'block';
-    seeBugsBtn.style.display = 'block';
-    alert('Admin mode enabled — OWNER');
-    hide(adminPopup);
-    renderPosts();
-  } else {
-    alert('Wrong admin credentials');
-  }
-});
-logoutButton.addEventListener('click', ()=>{
-  isAdmin = false;
-  logoutButton.style.display = 'none';
-  seeBugsBtn.style.display = 'none';
-  alert('Admin logged out');
-  renderPosts();
-});
-
-/* ---------------- Helper: get public IP via ipify (fallback to local pseudo-ip) ---------------- */
-async function fetchIP(){
-  if(localStorage.getItem('forumate_ip')) return localStorage.getItem('forumate_ip');
+/* ---------- IP & # mapping (ipMap stored in Firebase) ---------- */
+async function getMyIP(){
+  const cached = localStorage.getItem(LAST_IP_KEY);
+  if(cached) return cached;
   try{
     const r = await fetch('https://api.ipify.org?format=json');
+    if(!r.ok) throw new Error('ip fetch fail');
     const j = await r.json();
-    localStorage.setItem('forumate_ip', j.ip);
+    localStorage.setItem(LAST_IP_KEY, j.ip);
     return j.ip;
   }catch(e){
-    const pseudo = 'local-' + (localStorage.getItem('forumate_sms') || Math.floor(Math.random()*100000));
-    localStorage.setItem('forumate_ip', pseudo);
-    return pseudo;
+    // fallback pseudo
+    const p = 'local-' + (localStorage.getItem('forumate_local') || Math.floor(Math.random()*100000));
+    localStorage.setItem(LAST_IP_KEY, p);
+    return p;
   }
 }
 
-/* ---------------- ipMap for persistent #numbers ---------------- */
 async function ensureIpMap(){
-  if(ipMapCache) return ipMapCache;
   const snap = await db.ref('ipMap').once('value');
-  ipMapCache = snap.val() || {};
-  return ipMapCache;
+  return snap.val() || {};
 }
+
 async function assignNumberForIP(ip){
-  const map = await ensureIpMap();
+  const mapSnap = await db.ref('ipMap').once('value');
+  const map = mapSnap.val() || {};
   if(map[ip]) return map[ip];
-  // next number is max+1
-  const vals = Object.values(map).map(x=>Number(x)||0);
-  const next = vals.length? Math.max(...vals)+1 : 1;
+  const nums = Object.values(map).map(n=>Number(n)||0);
+  const next = nums.length ? Math.max(...nums)+1 : 1;
   map[ip] = next;
   await db.ref('ipMap').set(map);
-  ipMapCache = map;
   return next;
 }
 
-/* ---------------- Setup my IP & number ---------------- */
+/* ---------- Init my ip & number ---------- */
 (async ()=>{
-  myIP = await fetchIP();
+  myIP = await getMyIP();
   myNumber = await assignNumberForIP(myIP);
-  userHashEl.textContent = `#${myNumber}`;
+  if(userNumberEl) userNumberEl.textContent = `#${myNumber}`;
 })();
 
-/* ---------------- Post messages + image support ---------------- */
-async function postMessage(){
+/* ---------- Post creation ---------- */
+async function createPost(){
   const name = (nameInput.value || '').trim();
   const text = (messageInput.value || '').trim();
-  const image = (imageInput && imageInput.value || '').trim();
-  if(!name || !text) return alert('Name and message required');
+  const image = (imageInput.value || '').trim();
+  if(!name || !text){ toast('Enter name and message'); return; }
 
-  // use assigned number for this IP (ensures same # when name changes)
+  // display name uses number for this IP; if admin, show OWNER
   const number = await assignNumberForIP(myIP);
+  const displayName = isAdmin ? 'OWNER' : `${name} #${number}`;
 
-  const timestamp = Date.now();
+  const key = Date.now().toString();
   const post = {
-    name,
-    displayName: (isAdmin ? 'OWNER' : name) + ` #${number}`,
+    name: name,
+    displayName,
     message: text,
     image: image || '',
     ip: myIP,
     number,
-    owner: isAdmin? true : false,
+    owner: !!isAdmin,
     pinned: false,
-    ts: timestamp
+    ts: Date.now()
   };
-  await db.ref('posts/'+timestamp).set(post);
-  // clear inputs
+  await db.ref('posts/'+key).set(post);
   messageInput.value = '';
-  imageInput && (imageInput.value = '');
+  imageInput.value = '';
   localStorage.setItem(LAST_NAME_KEY, name);
+  toast('Posted');
 }
 
-// wire send UI
-sendButton.addEventListener('click', postMessage);
-messageInput.addEventListener('keypress', e=>{ if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); postMessage(); } });
+/* wire post */
+postBtn.addEventListener('click', createPost);
+messageInput.addEventListener('keydown', (e)=> {
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); createPost(); }
+});
 
-/* ---------------- Render posts (live) ---------------- */
-function renderPostElement(key, post){
-  const div = document.createElement('div');
-  div.className = 'post';
-  div.dataset.key = key;
+/* ---------- Render posts (live listener) ---------- */
+function createPostElement(key, p){
+  const wrap = document.createElement('div');
+  wrap.className = 'post';
+  wrap.dataset.key = key;
 
-  const header = document.createElement('div');
-  header.style.display = 'flex';
-  header.style.justifyContent = 'space-between';
-  header.style.alignItems = 'center';
+  // header
+  const hdr = document.createElement('div');
+  hdr.style.display='flex'; hdr.style.justifyContent='space-between'; hdr.style.alignItems='center';
 
   const left = document.createElement('div');
-  const nameEl = document.createElement('span');
+  const nameEl = document.createElement('div');
   nameEl.className = 'name';
-  nameEl.textContent = post.displayName || (post.name + ' #' + post.number);
-  if(post.owner) nameEl.classList.add('owner');
+  nameEl.textContent = p.displayName || (p.name + ' #' + p.number);
+  if(p.owner) nameEl.classList.add('owner');
   left.appendChild(nameEl);
 
-  const msgWrap = document.createElement('div');
-  const msgEl = document.createElement('div');
-  msgEl.textContent = post.message;
-  msgWrap.appendChild(msgEl);
-  if(post.image){
+  const right = document.createElement('div');
+  right.style.display='flex'; right.style.gap='8px'; right.style.alignItems='center';
+
+  // admin menu button for admins
+  if(isAdmin){
+    const adminMenu = document.createElement('button');
+    adminMenu.className = 'icon-btn';
+    adminMenu.textContent = '⋮';
+    adminMenu.title = 'Admin';
+    adminMenu.addEventListener('click', async ()=>{
+      const choice = prompt('Admin action: "delete" or "pin"');
+      if(!choice) return;
+      if(choice.toLowerCase() === 'delete'){
+        if(confirm('Delete this post?')) await db.ref('posts/'+key).remove();
+      } else if(choice.toLowerCase() === 'pin'){
+        await db.ref('posts/'+key+'/pinned').set(!p.pinned);
+      } else {
+        toast('Unknown command');
+      }
+    });
+    right.appendChild(adminMenu);
+  }
+
+  hdr.appendChild(left);
+  hdr.appendChild(right);
+  wrap.appendChild(hdr);
+
+  // body
+  const body = document.createElement('div');
+  body.style.marginTop = '8px';
+  body.textContent = p.message;
+  wrap.appendChild(body);
+
+  if(p.image){
     const img = document.createElement('img');
-    img.src = post.image;
+    img.src = p.image;
     img.alt = 'post image';
     img.style.maxWidth = '100%';
     img.style.marginTop = '8px';
-    msgWrap.appendChild(img);
+    img.style.borderRadius = '8px';
+    wrap.appendChild(img);
   }
 
-  const right = document.createElement('div');
-  right.style.display = 'flex';
-  right.style.gap = '8px';
-  right.style.alignItems = 'center';
-
-  // admin controls per post
-  if(isAdmin){
-    const menu = document.createElement('button');
-    menu.textContent = '⋮';
-    menu.title = 'Admin options';
-    menu.className = 'round-btn';
-    menu.style.width = '34px'; menu.style.height = '28px';
-    menu.addEventListener('click', ()=> {
-      // small admin menu: delete/pin
-      const action = prompt('Type "delete" to remove, "pin" to toggle pin');
-      if(!action) return;
-      if(action.toLowerCase()==='delete'){
-        if(confirm('Delete this post?')) db.ref('posts/'+key).remove();
-      } else if(action.toLowerCase()==='pin'){
-        db.ref('posts/'+key+'/pinned').set(!post.pinned);
-      } else {
-        alert('unknown action');
-      }
-    });
-    right.appendChild(menu);
+  if(p.pinned){
+    const pin = document.createElement('div');
+    pin.textContent = '📌 PINNED';
+    pin.style.color = '#ffd966'; pin.style.fontWeight = '700'; pin.style.marginBottom = '6px';
+    wrap.prepend(pin);
   }
-
-  header.appendChild(left);
-  header.appendChild(right);
-
-  if(post.pinned){
-    const pinnedBanner = document.createElement('div');
-    pinnedBanner.textContent = '📌 PINNED';
-    pinnedBanner.style.color = '#ffd966';
-    pinnedBanner.style.fontWeight = '700';
-    pinnedBanner.style.marginBottom = '6px';
-    div.appendChild(pinnedBanner);
-  }
-
-  div.appendChild(header);
-  div.appendChild(msgWrap);
-  return div;
+  return wrap;
 }
 
-async function renderPosts(){
-  const snap = await db.ref('posts').once('value');
-  const data = snap.val() || {};
-  // sort by timestamp key (keys are timestamps used)
-  const items = Object.keys(data).sort((a,b)=>Number(a)-Number(b)).map(k=>({k,p:data[k]}));
-  // pinned posts first
-  items.sort((A,B) => (B.p.pinned?1:0) - (A.p.pinned?1:0));
-  const container = document.querySelector('.posts') || document.getElementById('posts') || document.getElementById('messages');
-  if(!container) return;
-  container.innerHTML = '';
-  items.forEach(item=>{
-    const el = renderPostElement(item.k, item.p);
-    container.appendChild(el);
-  });
-  // update online count (unique IPs)
-  const allIPs = new Set(items.map(x=>x.p.ip));
-  onlineCountEl.textContent = 'Online: ' + allIPs.size;
+async function renderAllPosts(snapshot){
+  const data = snapshot.val() || {};
+  // convert to array and sort by ts asc
+  const arr = Object.entries(data).map(([k,v]) => ({k, ...v}));
+  // pinned first
+  arr.sort((a,b) => (b.pinned?1:0) - (a.pinned?1:0) || (a.ts - b.ts));
+  postsEl.innerHTML = '';
+  arr.forEach(item => postsEl.appendChild(createPostElement(item.k, item)));
+  // online count = unique ips among posts
+  const ips = new Set(arr.map(x=>x.ip));
+  onlineCountEl.textContent = 'Online: ' + ips.size;
 }
 
-/* real-time listener for immediate updates */
-db.ref('posts').on('value', ()=> renderPosts());
+/* subscribe */
+db.ref('posts').on('value', renderAllPosts);
 
-/* ---------------- Bug reporting ---------------- */
-reportBugBtn.addEventListener('click', ()=>{
-  // open report flow: hide posts and show report submit button
-  const msg = prompt('Describe the bug:');
-  if(!msg) return;
-  const t = Date.now();
-  db.ref('bugs/'+t).set({msg, ts:t, ip: myIP, number: myNumber, date: new Date().toLocaleString()});
-  alert('Bug submitted — thanks');
+/* ---------- Bug reporting ---------- */
+reportBugBtn.addEventListener('click', async ()=>{
+  const desc = prompt('Describe the bug you saw (short):');
+  if(!desc) return;
+  const key = Date.now().toString();
+  await db.ref('bugs/'+key).set({msg: desc, ip: myIP, number: myNumber, ts: Date.now(), date: new Date().toLocaleString()});
+  toast('Bug reported — thanks');
 });
 
 seeBugsBtn.addEventListener('click', async ()=>{
-  if(!isAdmin) return alert('admin only');
-  // load bugs into bugsList and show panel
+  if(!isAdmin) return toast('Admin only');
   const snap = await db.ref('bugs').once('value');
   const data = snap.val() || {};
-  const list = document.getElementById('bugsList') || (()=>{ const d=document.createElement('div'); d.id='bugsList'; return d; })();
-  list.innerHTML = '';
-  Object.keys(data).sort((a,b)=>b-a).forEach(k=>{
-    const b = data[k];
-    const item = document.createElement('div'); item.className = 'bug-item';
-    item.innerHTML = `<div>${b.date} — #${b.number} (${b.ip})</div><div>${b.msg}</div>`;
-    const del = document.createElement('button'); del.textContent='Delete'; del.className='secondary';
+  bugsListEl.innerHTML = '';
+  Object.entries(data).sort((a,b)=>b[0]-a[0]).forEach(([k,v])=>{
+    const item = document.createElement('div'); item.className='bug-item';
+    item.innerHTML = `<div><strong>#${v.number}</strong> ${v.date}</div><div>${v.msg}</div>`;
+    const del = document.createElement('button'); del.className='btn secondary'; del.textContent='Delete';
     del.style.marginTop='8px';
-    del.onclick = ()=> { if(confirm('Remove bug?')) db.ref('bugs/'+k).remove(); };
+    del.onclick = ()=> { if(confirm('Delete bug?')) db.ref('bugs/'+k).remove(); };
     item.appendChild(del);
-    list.appendChild(item);
+    bugsListEl.appendChild(item);
   });
-  const panel = document.getElementById('bugsPanel');
-  if(panel){
-    const content = panel.querySelector('#bugsList') || list;
-    if(!panel.querySelector('#bugsList')) panel.querySelector('.modal-card').appendChild(list);
-    show(panel);
-  }
+  show(bugsModal);
 });
 
-/* close bugs panel */
-const closeBugs = document.getElementById('closeBugs');
-if(closeBugs) closeBugs.addEventListener('click', ()=> hide(document.getElementById('bugsPanel')));
+/* ---------- Admin login ---------- */
+adminLoginBtn.addEventListener('click', ()=>{
+  const u = (document.getElementById('adminUser').value || '').trim().toLowerCase();
+  const p = (document.getElementById('adminPass').value || '').trim();
+  if(u === ADMIN_USER && p === ADMIN_PASS){
+    isAdmin = true;
+    toast('Admin logged in (OWNER)');
+    show(seeBugsBtn);
+    show(logoutBtn);
+    hide(adminModal);
+    renderAllPosts({ val: () => db.ref('posts').once('value').then(snap=>snap.val())}); // quick refresh
+  } else {
+    toast('Wrong admin credentials');
+  }
+});
+logoutBtn.addEventListener('click', ()=>{ isAdmin = false; hide(seeBugsBtn); hide(logoutBtn); toast('Admin logged out'); renderAllPosts({ val: () => db.ref('posts').once('value').then(snap=>snap.val())}); });
 
-/* ---------------- Update checker (simple) ---------------- */
-const updateIndicator = document.getElementById('lastUpdated');
-if(updateIndicator) updateIndicator.textContent = '— last updated 2025-10-23';
+/* ---------- update checker (compares raw index.html on GitHub) ---------- */
+(async function checkForUpdate(){
+  try{
+    const rawUrl = 'https://raw.githubusercontent.com/Meltingfaceemoji/Forumate/main/index.html';
+    const r = await fetch(rawUrl);
+    if(!r.ok) throw new Error('fetch fail');
+    const text = await r.text();
+    // Simple check: look for "v7.4" or version label in remote file
+    if(text.includes('v7.4')) updateCheckEl.textContent = 'Up to date';
+    else updateCheckEl.textContent = 'Remote changed';
+  }catch(e){
+    updateCheckEl.textContent = 'Update check failed';
+  }
+})();
 
-/* ---------------- Init: load last name from localStorage ---------------- */
+/* ---------- load last name ---------- */
 if(localStorage.getItem(LAST_NAME_KEY)) nameInput.value = localStorage.getItem(LAST_NAME_KEY);
 
-/* ---------------- Helpers to show/hide modals ---------------- */
-function show(el){ if(!el) return; el.classList.remove('hidden'); el.setAttribute('aria-hidden','false'); }
-function hide(el){ if(!el) return; el.classList.add('hidden'); el.setAttribute('aria-hidden','true'); }
-
-/* ---------------- Final sanity: ensure UI wiring exists ---------------- */
-(function validateWiring(){
-  const required = ['menuButton','sidebar','closeSidebar','reportBug','seeBugs','pinnedView','settingsBtn','logoutButton','infoButton','adminButton','adminPopup','loginButton','sendButton','nameInput','messageInput','posts'];
-  const missing = required.filter(id => !document.getElementById(id));
-  if(missing.length){
-    console.warn('Missing elements (check HTML IDs):', missing);
-  } else {
-    console.log('UI wiring OK');
-  }
+/* ---------- basic sanity log ---------- */
+(function validateIds(){
+  const want = ['menuBtn','sidebar','closeSidebar','reportBugBtn','seeBugsBtn','pinnedBtn','logoutBtn','infoBtn','adminBtn','adminModal','adminLoginBtn','postBtn','posts'];
+  const missing = want.filter(id=>!document.getElementById(id));
+  if(missing.length) console.warn('Missing elements (check HTML ids):', missing);
 })();
