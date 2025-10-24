@@ -5,12 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Forumate v7.4 - Simplicity</title>
 <link rel="stylesheet" href="style.css">
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
-<!-- Wallpaper -->
 <div class="wallpaper"></div>
 
 <!-- Topbar -->
@@ -19,33 +18,33 @@
     <button id="menuBtn" class="icon-btn">&#9776;</button>
     <span class="brand">Forumate</span>
   </div>
-  <div class="center">
-    <button id="adminBtn" class="icon-btn">A</button>
-    <button id="infoBtn" class="icon-btn">i</button>
-  </div>
+  <div class="center"></div>
   <div class="right">
-    <span class="versionLabel" id="versionLabel">7.4</span>
-    <span class="updateSmall" id="updateCheck"></span>
+    <button id="adminBtn" class="icon-btn">A</button>
+    <span class="versionLabel">v7.4</span>
+    <span id="updateCheck" class="updateSmall"></span>
   </div>
 </div>
 
 <!-- Sidebar -->
 <div id="sidebar" class="sidebar">
   <div class="sidebar-inner">
-    <button class="side-btn" id="reportBugBtn">Report Bug</button>
-    <button class="side-btn" id="seeBugsBtn" style="display:none;">See Bug Reports</button>
-    <button class="side-btn" id="logoutBtn" style="display:none;">Logout</button>
-    <span class="sidebar-footer" id="onlineCount">Online: 0</span>
+    <button id="reportBugBtn" class="side-btn">Report Bug</button>
+    <button id="seeBugsBtn" class="side-btn" style="display:none;">See Bugs</button>
+    <button id="infoBtn" class="side-btn">Info</button>
+    <button id="logoutBtn" class="side-btn" style="display:none;">Logout Admin</button>
+    <div id="onlineCount" class="sidebar-footer">Online: 0</div>
   </div>
 </div>
 
-<!-- Main Content -->
+<!-- Main content -->
 <div class="main">
-  <div class="posts" id="posts"></div>
-  <div class="composer glass">
-    <input id="nameInput" placeholder="Your name">
-    <textarea id="messageInput" placeholder="Message" rows="3"></textarea>
-    <input id="imageInput" placeholder="Image URL (optional)">
+  <div id="posts" class="posts"></div>
+
+  <div class="composer">
+    <input type="text" id="nameInput" placeholder="Your Name">
+    <textarea id="messageInput" placeholder="Message"></textarea>
+    <input type="text" id="imageInput" placeholder="Optional Image URL">
     <div class="composer-row">
       <button id="postBtn" class="btn primary">Post</button>
       <button id="submitBugBtn" class="btn secondary" style="display:none;">Submit Bug</button>
@@ -53,34 +52,42 @@
   </div>
 </div>
 
-<!-- Modals -->
+<!-- Admin Modal -->
 <div id="adminModal" class="modal hidden">
-  <div class="modal-card glass">
+  <div class="modal-card">
     <h3>Admin Login</h3>
     <input id="adminUser" class="modal-input" placeholder="Username">
-    <input id="adminPass" class="modal-input" placeholder="Password" type="password">
+    <input id="adminPass" type="password" class="modal-input" placeholder="Password">
     <div class="modal-actions">
       <button id="adminLoginBtn" class="btn primary">Login</button>
+      <button id="closeAdminModal" class="btn secondary">Close</button>
     </div>
   </div>
 </div>
 
+<!-- Bugs Modal -->
+<div id="bugsModal" class="modal hidden">
+  <div class="modal-card wide">
+    <h3>Bug Reports</h3>
+    <div id="bugsList"></div>
+    <div class="modal-actions">
+      <button id="closeBugsModal" class="btn secondary">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Info Modal -->
 <div id="infoModal" class="modal hidden">
-  <div class="modal-card glass">
+  <div class="modal-card">
     <h3>Info</h3>
     <p>© MeltingDev</p>
-    <p>Your # number: <span id="userNumber">0</span></p>
+    <p>User #: <span id="userNumber"></span></p>
+    <div class="modal-actions">
+      <button id="closeInfoModal" class="btn secondary">Close</button>
+    </div>
   </div>
 </div>
 
-<div id="bugsModal" class="modal hidden">
-  <div class="modal-card glass wide">
-    <h3>Bug Reports</h3>
-    <div id="bugsList" style="max-height:400px;overflow-y:auto;"></div>
-  </div>
-</div>
-
-<!-- Toast -->
 <div id="toast" class="toast"></div>
 
 <script src="script.js"></script>
