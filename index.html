@@ -5,29 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Forumate</title>
 <link rel="stylesheet" href="style.css">
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
-<!-- Wallpaper -->
+<!-- Background -->
 <div class="background"></div>
 
-<!-- Top circular controls -->
-<div class="top-controls">
-  <div id="usernameCircle" class="circle glass">Name</div>
-  <div id="adminBtn" class="circle glass">A</div>
-  <div id="menuBtn" class="circle glass hamburger">☰</div>
-</div>
+<!-- Hamburger -->
+<div id="menuBtn" class="hamburger">☰</div>
 
 <!-- Sidebar -->
 <div id="sidebar" class="sidebar glass">
-  <div id="adminControls" class="admin-only">
-    <button id="seeBugsBtn" class="btn glass">See Bugs</button>
-    <button id="reportBugBtn" class="btn glass">Report Bug</button>
-    <button id="resetChatBtn" class="btn glass">Reset Chat</button>
-    <button id="infoBtn" class="btn glass">Info</button>
-  </div>
+    <!-- Buttons added dynamically based on user/admin mode -->
 </div>
 
 <!-- Posts -->
@@ -35,44 +26,51 @@
 
 <!-- Composer -->
 <div class="composer glass">
-  <input type="text" id="nameInput" placeholder="Name">
-  <textarea id="messageInput" placeholder="Message"></textarea>
-  <input type="text" id="imageInput" placeholder="Image URL (optional)">
-  <button id="postBtn" class="btn glass">Post</button>
+    <input type="text" id="nameInput" placeholder="Name">
+    <textarea id="messageInput" placeholder="Message"></textarea>
+    <input type="text" id="imageInput" placeholder="Image URL (optional)">
+    <button id="postBtn" class="btn glass">Post</button>
 </div>
 
 <!-- Admin Login Modal -->
 <div id="adminModal" class="modal hidden">
-  <div class="modal-card glass">
-    <h3>Admin Login</h3>
-    <input type="text" id="adminUser" placeholder="Username">
-    <input type="password" id="adminPass" placeholder="Password">
-    <div class="modal-actions">
-      <button id="adminLoginBtn" class="btn glass">Login</button>
-      <button id="closeAdminModal" class="btn glass">Close</button>
+    <div class="modal-card glass">
+        <h3>Admin Login</h3>
+        <input type="text" id="adminUser" placeholder="Username">
+        <input type="password" id="adminPass" placeholder="Password">
+        <button id="adminLoginBtn" class="btn glass">Login</button>
+        <button id="closeAdminModal" class="btn glass">Close</button>
     </div>
-  </div>
-</div>
-
-<!-- Bug Modal -->
-<div id="bugsModal" class="modal hidden">
-  <div class="modal-card glass wide">
-    <h3>Bug Reports</h3>
-    <div id="bugsList" class="posts"></div>
-    <button id="closeBugsModal" class="btn glass">Close</button>
-  </div>
 </div>
 
 <!-- Info Modal -->
 <div id="infoModal" class="modal hidden">
-  <div class="modal-card glass">
-    <h3>Info</h3>
-    <p>©MeltingDev</p>
-    <p>Your ID: <span id="userNumber"></span></p>
-    <button id="closeInfoModal" class="btn glass">Close</button>
-  </div>
+    <div class="modal-card glass">
+        <h3>User Info</h3>
+        <p>Your ID: <span id="userNumber"></span></p>
+        <button id="closeInfoModal" class="btn glass">Close</button>
+    </div>
 </div>
 
+<!-- Bugs Modal -->
+<div id="bugsModal" class="modal hidden">
+    <div class="modal-card glass wide">
+        <h3>Bug Reports</h3>
+        <div id="bugsList" class="bugsList"></div>
+        <button id="closeBugsModal" class="btn glass">Close</button>
+    </div>
+</div>
+
+<!-- Message Reports Modal (Admin only) -->
+<div id="messageReportsModal" class="modal hidden">
+    <div class="modal-card glass wide">
+        <h3>Message Reports</h3>
+        <div id="messageReportsList" class="bugsList"></div>
+        <button id="closeMessageReportsModal" class="btn glass">Close</button>
+    </div>
+</div>
+
+<!-- Toast Notification -->
 <div id="toast" class="toast"></div>
 
 <script src="script.js"></script>
